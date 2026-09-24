@@ -608,8 +608,7 @@ def test_pathspec_matching():
 
     # Test multiple patterns (brace expansion not supported in gitignore, so test separately)
     assert crawl.match_pathspec(
-        "plugins/notion/skills/search/SKILL.md",
-        ["plugins/*/skills/*/SKILL.md", "external_plugins/*/skills/*/SKILL.md"]
+        "plugins/notion/skills/search/SKILL.md", ["plugins/*/skills/*/SKILL.md", "external_plugins/*/skills/*/SKILL.md"]
     )
     assert crawl.match_pathspec(
         "external_plugins/slack/skills/send/SKILL.md",

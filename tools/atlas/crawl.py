@@ -228,9 +228,7 @@ def compute_folder_sha256(files: dict[str, bytes]) -> str:
     return hasher.hexdigest()
 
 
-def find_license_files(
-    tree_entries: list[dict[str, Any]], skill_dir: str
-) -> list[dict[str, str]]:
+def find_license_files(tree_entries: list[dict[str, Any]], skill_dir: str) -> list[dict[str, str]]:
     """
     Find LICENSE-type files from skill directory up to repository root.
 
@@ -411,9 +409,7 @@ def crawl_source(
 
             for tree_entry in tree:
                 entry_path = Path(tree_entry["path"])
-                entry_dir = (
-                    str(entry_path.parent) if entry_path.parent != Path(".") else "."
-                )
+                entry_dir = str(entry_path.parent) if entry_path.parent != Path(".") else "."
 
                 # Check if this file/directory is within the skill directory
                 if skill_dir == ".":
@@ -494,9 +490,7 @@ def crawl_source(
             json.dump(state, f, indent=2, ensure_ascii=False)
             f.write("\n")
 
-        logger.info(
-            f"{source_id}: Found {len(skills_found)} skills, skipped {symlinks_skipped} symlinks"
-        )
+        logger.info(f"{source_id}: Found {len(skills_found)} skills, skipped {symlinks_skipped} symlinks")
 
         return {
             "success": True,
