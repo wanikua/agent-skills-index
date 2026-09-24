@@ -46,7 +46,67 @@ def cmd_validate(args):
 
 def cmd_crawl(args):
     """Crawl agent skills from sources."""
-    print("Crawl not yet implemented")
+    import json
+    import logging
+    from pathlib import Path
+
+    from tools.atlas import crawl
+
+    # Set up logging
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+    # Determine workspace root
+    repo_root = Path(__file__).parent.parent.parent
+
+    # Load sources
+    sources_file = repo_root / "index" / "sources.json"
+    if not sources_file.exists():
+        print(f"Error: {sources_file} not found", file=sys.stderr)
+        return 1
+
+    with open(sources_file) as f:
+        sources_data = json.load(f)
+
+    sources = sources_data.get("repositories", [])
+
+    if not sources:
+        print("No sources found in sources.json", file=sys.stderr)
+        return 1
+
+    # Set up directories
+    state_dir = repo_root / "state" / "crawl"
+    output_dir = repo_root / "build" / "raw"
+
+    # Determine which sources to crawl
+    if args.source:
+        source_filter = args.source
+    elif args.all:
+        source_filter = None
+    else:
+        print("Error: Must specify either --source ID or --all", file=sys.stderr)
+        return 1
+
+    # Crawl
+    result = crawl.crawl_sources(
+        sources=sources,
+        repo_root=repo_root,
+        state_dir=state_dir,
+        output_dir=output_dir,
+        force=args.force,
+        source_id_filter=source_filter,
+    )
+
+    if not result.get("success"):
+        print(f"Crawl failed: {result.get('error', 'Unknown error')}", file=sys.stderr)
+        return 1
+
+    # Print summary
+    print("\nCrawl complete:")
+    print(f"  Sources crawled: {result['sources_crawled']}")
+    print(f"  Sources skipped (unchanged): {result['sources_skipped']}")
+    print(f"  Sources failed: {result['sources_failed']}")
+    print(f"  Total skills found: {result['total_skills']}")
+
     return 0
 
 
