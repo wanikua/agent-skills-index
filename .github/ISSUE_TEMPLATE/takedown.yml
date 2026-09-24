@@ -1,0 +1,89 @@
+name: Takedown Request
+description: Request removal of content from the index (for rights holders or security reports)
+title: "[Takedown] "
+labels: ["takedown"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Takedown Request
+        
+        **Acknowledgment Timeline:** We aim to acknowledge all takedown requests within 24 hours. Complete removal may take additional time depending on the nature of the request.
+        
+        **For Rights Holders:** Please provide complete information to help us verify and process your request.
+        
+        **For Security Issues:** If you're reporting a security vulnerability, please also consider notifying the upstream repository owner directly.
+
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: Request Type
+      description: What is the nature of this takedown request?
+      options:
+        - Copyright/IP Rights Violation
+        - Security Vulnerability
+        - Malicious Content
+        - Privacy Concern
+        - License Violation
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: content_identifier
+    attributes:
+      label: Content Identifier
+      description: The skill ID, repository URL, or content hash to be removed
+      placeholder: e.g., skill-id, https://github.com/owner/repo, or content hash
+    validations:
+      required: true
+
+  - type: input
+    id: rights_holder
+    attributes:
+      label: Rights Holder / Reporter Name
+      description: Your name or organization name
+      placeholder: Individual Name or Organization Name
+    validations:
+      required: true
+
+  - type: input
+    id: contact_email
+    attributes:
+      label: Contact Email
+      description: Email address where we can reach you for follow-up
+      placeholder: email@example.com
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Detailed Reason
+      description: Please provide a detailed explanation of why this content should be removed
+      placeholder: |
+        - What rights are being violated or what security issue exists?
+        - What is your relationship to the content (owner, authorized representative, security researcher)?
+        - Any supporting documentation or evidence?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verification
+      options:
+        - label: I have a good faith belief that the use of the described content is not authorized by the rights holder, its agent, or the law
+          required: true
+        - label: The information in this request is accurate
+          required: true
+        - label: Under penalty of perjury, I am authorized to act on behalf of the rights holder (if applicable)
+          required: false
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: Additional Information
+      description: Any other relevant information, supporting links, or documentation
+    validations:
+      required: false

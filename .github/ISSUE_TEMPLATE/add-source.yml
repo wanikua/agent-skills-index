@@ -1,0 +1,56 @@
+name: Add Skill Source
+description: Request to add a new skill repository as a source
+title: "[Add Source] "
+labels: ["source-addition"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new skill source! Please provide the following information to help us evaluate the repository.
+
+  - type: input
+    id: repo_url
+    attributes:
+      label: Repository URL
+      description: The full GitHub repository URL (e.g., https://github.com/owner/repo)
+      placeholder: https://github.com/owner/repo
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason for Inclusion
+      description: Why should this source be added to the index? What skills does it provide?
+      placeholder: This repository contains well-documented skills for...
+    validations:
+      required: true
+
+  - type: input
+    id: license
+    attributes:
+      label: Known License
+      description: The license under which the repository is published (e.g., MIT, Apache-2.0)
+      placeholder: MIT
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I have verified that this repository is publicly accessible
+          required: true
+        - label: I have reviewed the repository's license and it allows redistribution
+          required: true
+        - label: I am not affiliated with this repository's owner (or I have disclosed the affiliation below)
+          required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any other information that might be relevant (affiliation disclosure, special considerations, etc.)
+    validations:
+      required: false
