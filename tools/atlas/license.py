@@ -70,7 +70,7 @@ class LicenseClassifier:
             return None
 
         # Trim whitespace and quotes
-        license_str = license_str.strip().strip('"\'')
+        license_str = license_str.strip().strip("\"'")
 
         # Check if it's a URL
         for url, spdx in self.url_patterns.items():
@@ -163,7 +163,7 @@ class LicenseResolver:
     # Simple text fingerprints for common licenses
     MIT_FINGERPRINTS = [
         "Permission is hereby granted, free of charge",
-        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY",
+        'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY',
     ]
 
     APACHE_FINGERPRINTS = [
