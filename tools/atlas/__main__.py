@@ -211,6 +211,14 @@ def cmd_discover(args):
     return run_discover(output_path)
 
 
+def cmd_curate(args):
+    """Curate skills into the curated/ directory."""
+    from tools.atlas.curate import cmd_curate as curate_impl
+
+    workspace = Path.cwd()
+    return curate_impl(args, workspace)
+
+
 def main():
     """Main entry point for the atlas CLI."""
     parser = argparse.ArgumentParser(prog="atlas", description="Skill Atlas CLI - Manage the agent skills index")
@@ -268,6 +276,15 @@ def main():
         "-o", "--output", help="Output path for candidates.jsonl (default: build/candidates.jsonl)"
     )
     discover_parser.set_defaults(func=cmd_discover)
+
+    # curate command
+    curate_parser = subparsers.add_parser("curate", help="Curate tier 1 skills into curated/ directory")
+    curate_parser.add_argument("--id", help="Curate a specific skill by ID")
+    curate_parser.add_argument("--auto-tier1", action="store_true", help="Auto-curate tier 1 skills")
+    curate_parser.add_argument("--max-total", type=int, default=40, help="Maximum total skills to curate (default: 40)")
+    curate_parser.add_argument("--max-per-source", type=int, default=3, help="Maximum skills per source (default: 3)")
+    curate_parser.add_argument("--dry-run", action="store_true", help="List candidates without actually curating")
+    curate_parser.set_defaults(func=cmd_curate)
 
     args = parser.parse_args()
 
