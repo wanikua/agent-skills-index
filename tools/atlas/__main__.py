@@ -492,7 +492,9 @@ def main():
     )
     check_refs_parser.add_argument("--source", help="Specific source ID to check")
     check_refs_parser.add_argument("--check-owners", action="store_true", help="Also check if source owners exist")
-    check_refs_parser.add_argument("--timeout", type=float, default=10.0, help="Network timeout in seconds (default: 10)")
+    check_refs_parser.add_argument(
+        "--timeout", type=float, default=10.0, help="Network timeout in seconds (default: 10)"
+    )
     check_refs_parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
     check_refs_parser.set_defaults(func=cmd_check_refs)
 

@@ -337,9 +337,7 @@ def build_skill_record(
                 external_refs_result = check_refs.check_skill_references(raw_skill, ref_checker)
                 if external_refs_result["has_dangling"]:
                     skill_status = "dangling"
-                    logger.warning(
-                        f"Skill {skill_id} has dangling references: {external_refs_result['dangling_refs']}"
-                    )
+                    logger.warning(f"Skill {skill_id} has dangling references: {external_refs_result['dangling_refs']}")
                 external_refs_data = external_refs_result["external_refs"]
             except Exception as e:
                 logger.error(f"Failed to check references for {skill_id}: {e}")
