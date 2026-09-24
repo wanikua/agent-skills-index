@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wanikua/agent-skills-index/schemas/stats.json",
+  "title": "Index Statistics",
+  "description": "Schema for Skill Atlas index statistics",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "index_commit",
+    "total_skills",
+    "canonical_skills",
+    "repositories",
+    "curated_skills"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version (semantic versioning)"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of generation"
+    },
+    "index_commit": {
+      "type": "string",
+      "description": "Git commit SHA of index data"
+    },
+    "total_skills": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of skills"
+    },
+    "canonical_skills": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of canonical (non-duplicate) skills"
+    },
+    "repositories": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of source repositories"
+    },
+    "curated_skills": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of curated layer skills"
+    },
+    "by_license_class": {
+      "type": "object",
+      "properties": {
+        "allow": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conditional": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deny": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "description": "Skills by license class"
+    },
+    "by_trust_tier": {
+      "type": "object",
+      "properties": {
+        "official": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "community": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "aggregator-copy": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unreviewed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "description": "Skills by trust tier"
+    },
+    "spec_strict_valid_pct": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Percentage of skills passing strict spec validation"
+    },
+    "tier1_freshness_p50_hours": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Median hours from upstream commit to crawl (tier 1 sources)"
+    }
+  }
+}

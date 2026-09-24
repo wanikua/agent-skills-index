@@ -1,0 +1,23 @@
+{
+  "schema_version": "2.0.0",
+  "generated_at": "2026-09-24T09:39:00Z",
+  "index_commit": "5e5f91b",
+  "total_skills": 0,
+  "canonical_skills": 0,
+  "repositories": 0,
+  "curated_skills": 0,
+  "by_license_class": {
+    "allow": 0,
+    "conditional": 0,
+    "deny": 0,
+    "unknown": 0
+  },
+  "by_trust_tier": {
+    "official": 0,
+    "community": 0,
+    "aggregator-copy": 0,
+    "unreviewed": 0
+  },
+  "spec_strict_valid_pct": 0.0,
+  "tier1_freshness_p50_hours": null
+}
