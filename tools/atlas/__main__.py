@@ -101,7 +101,7 @@ def cmd_crawl(args):
         return 1
 
     # Print summary
-    print(f"\nCrawl complete:")
+    print("\nCrawl complete:")
     print(f"  Sources crawled: {result['sources_crawled']}")
     print(f"  Sources skipped (unchanged): {result['sources_skipped']}")
     print(f"  Sources failed: {result['sources_failed']}")
