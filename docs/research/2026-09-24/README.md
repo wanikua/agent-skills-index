@@ -44,7 +44,7 @@
    - `id` 用的是 name，而 name 并不全局唯一；
    - 只有 curated 层有 hash；
    - 许可证按仓库级处理；
-   - `router/SKILL.md` 没有 YAML frontmatter，而且放在 CLI 不扫描的目录里，**现在无法被安装**。
+   - 路由 skill 现在位于 `skills/skill-atlas/SKILL.md`，有了 YAML frontmatter，可以被 CLI 安装。
 5. **许可证**
    - 1.43M 个 skill 里只有 11.25% 声明了 license。
    - anthropics/skills 根目录没有 LICENSE；docx/pdf/pptx/xlsx 四个 skill 是“All rights reserved”。

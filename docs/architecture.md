@@ -124,7 +124,7 @@ Provide **intelligent discovery** that helps agents:
 - Learn from successful discoveries
 
 ### Current State: v0 Stub
-`router/SKILL.md` is a basic skill that teaches agents:
+`skills/skill-atlas/SKILL.md` is a basic skill that teaches agents:
 1. Query `index/skills.json` first
 2. Prefer `layer: curated`
 3. Use `sources/` for broader search
