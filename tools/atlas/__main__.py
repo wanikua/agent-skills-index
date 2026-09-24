@@ -250,6 +250,141 @@ def cmd_sources_import(args):
         return 1
 
 
+def cmd_scan_security(args):
+    """Scan a skill for security issues."""
+    from pathlib import Path
+
+    from tools.atlas import security
+
+    skill_path = Path(args.directory).resolve()
+
+    if not skill_path.is_dir():
+        print(f"Error: {skill_path} is not a directory", file=sys.stderr)
+        return 1
+
+    # Find SKILL.md
+    skill_md = skill_path / "SKILL.md"
+    if not skill_md.exists():
+        print(f"Error: SKILL.md not found in {skill_path}", file=sys.stderr)
+        return 1
+
+    # Read content
+    try:
+        with open(skill_md, encoding="utf-8") as f:
+            content = f.read()
+    except Exception as e:
+        print(f"Error reading SKILL.md: {e}", file=sys.stderr)
+        return 1
+
+    # Parse description from frontmatter if possible
+    description = None
+    try:
+        from tools.atlas import frontmatter
+
+        fm_result = frontmatter.parse_content(content, skill_path.name)
+        description = fm_result.get("frontmatter", {}).get("description")
+    except Exception:
+        pass
+
+    # Check for scripts/ directory
+    scripts_present = (skill_path / "scripts").exists()
+
+    # Run scan
+    print(f"Scanning: {skill_path}")
+    print(f"Scripts present: {scripts_present}")
+    print()
+
+    scan_result = security.scan_skill(
+        content=content,
+        description=description,
+        skill_path=skill_path,
+        scripts_present=scripts_present,
+        layer=args.layer,
+    )
+
+    # Print results
+    print(f"Status: {scan_result.status}")
+    print(f"Risk Level: {scan_result.risk_level}")
+    print(f"Capabilities: {', '.join(scan_result.capabilities) if scan_result.capabilities else 'none'}")
+    print(f"Needs Exclusion: {scan_result.needs_exclusion}")
+    print()
+
+    if scan_result.ioc_matches:
+        print(f"IOC Matches ({len(scan_result.ioc_matches)}):")
+        for match in scan_result.ioc_matches:
+            line_info = f" (line {match.line_number})" if match.line_number else ""
+            print(f"  [{match.severity.upper()}] {match.pattern_name}{line_info}")
+            print(f"    {match.matched_text}")
+        print()
+
+    print(f"Scans run: {len(scan_result.scans)}")
+    for scan in scan_result.scans:
+        engine = scan.get("engine", "unknown")
+        counts = scan.get("counts", {})
+        if counts:
+            print(f"  {engine}: {counts}")
+
+    if args.json:
+        import json
+
+        output = security.format_security_field(scan_result)
+        print("\nJSON output:")
+        print(json.dumps(output, indent=2, ensure_ascii=False))
+
+    # Exit code based on status
+    if scan_result.status in ["malicious", "error"]:
+        return 1
+    return 0
+
+
+def cmd_gate(args):
+    """Check if a skill meets gate requirements."""
+    import json
+    from pathlib import Path
+
+    # For now, only support checking curated gate
+    if args.gate != "curated":
+        print(f"Error: Gate '{args.gate}' not implemented", file=sys.stderr)
+        return 1
+
+    # Load skill record
+    skill_id = args.skill_id
+    index_file = Path.cwd() / "index" / "skills.jsonl"
+
+    if not index_file.exists():
+        print(f"Error: {index_file} not found", file=sys.stderr)
+        return 1
+
+    # Find skill
+    skill = None
+    with open(index_file, encoding="utf-8") as f:
+        for line in f:
+            record = json.loads(line)
+            if record.get("id") == skill_id:
+                skill = record
+                break
+
+    if not skill:
+        print(f"Error: Skill {skill_id} not found in index", file=sys.stderr)
+        return 1
+
+    # Check gate
+    from tools.atlas import security
+
+    passes, reasons = security.gate_curated(skill)
+
+    print(f"Skill: {skill_id}")
+    print("Gate: curated")
+    print(f"Result: {'✓ PASS' if passes else '✗ FAIL'}")
+
+    if reasons:
+        print("\nReasons:")
+        for reason in reasons:
+            print(f"  - {reason}")
+
+    return 0 if passes else 1
+
+
 def cmd_discover(args):
     """Discover skill repositories from aggregator READMEs."""
     from tools.atlas.discover import run_discover
@@ -479,6 +614,21 @@ def main():
         "-o", "--output", help="Output path for candidates.jsonl (default: build/candidates.jsonl)"
     )
     discover_parser.set_defaults(func=cmd_discover)
+
+    # scan-security command
+    scan_security_parser = subparsers.add_parser("scan-security", help="Scan a skill for security issues (S2-4)")
+    scan_security_parser.add_argument("directory", help="Path to skill directory containing SKILL.md")
+    scan_security_parser.add_argument(
+        "--layer", choices=["source", "curated"], default="source", help="Layer to scan for (default: source)"
+    )
+    scan_security_parser.add_argument("--json", action="store_true", help="Output security field as JSON")
+    scan_security_parser.set_defaults(func=cmd_scan_security)
+
+    # gate command
+    gate_parser = subparsers.add_parser("gate", help="Check if a skill meets gate requirements (S2-7)")
+    gate_parser.add_argument("gate", choices=["source", "curated"], help="Gate to check")
+    gate_parser.add_argument("skill_id", help="Skill ID to check")
+    gate_parser.set_defaults(func=cmd_gate)
 
     # dedup command
     dedup_parser = subparsers.add_parser("dedup", help="Analyze and apply deduplication to the index")
