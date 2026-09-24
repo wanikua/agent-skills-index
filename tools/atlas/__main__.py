@@ -62,6 +62,45 @@ def cmd_stats(args):
     return 0
 
 
+def cmd_lint_skill(args):
+    """Lint a skill directory for frontmatter conformance."""
+    from pathlib import Path
+
+    from tools.atlas.frontmatter import lint_skill
+
+    skill_dir = Path(args.directory).resolve()
+
+    if not skill_dir.is_dir():
+        print(f"Error: {skill_dir} is not a directory", file=sys.stderr)
+        return 1
+
+    result = lint_skill(skill_dir, lenient=args.lenient)
+
+    # Print results
+    print(f"Skill directory: {skill_dir}")
+    print(f"Strict mode: {'✓ PASS' if result.strict_valid else '✗ FAIL'}")
+    print(f"Lenient mode: {'✓ PASS' if result.lenient_valid else '✗ FAIL'}")
+
+    if result.errors:
+        print(f"\nErrors ({len(result.errors)}):")
+        for error in result.errors:
+            print(f"  - {error}")
+
+    if result.warnings:
+        print(f"\nWarnings ({len(result.warnings)}):")
+        for warning in result.warnings:
+            print(f"  - {warning}")
+
+    if result.dialects:
+        print(f"\nInferred dialects: {', '.join(result.dialects)}")
+
+    if result.extensions:
+        print(f"\nExtensions: {', '.join(sorted(result.extensions.keys()))}")
+
+    # Return exit code based on lenient mode result
+    return 0 if result.lenient_valid else 1
+
+
 def main():
     """Main entry point for the atlas CLI."""
     parser = argparse.ArgumentParser(prog="atlas", description="Skill Atlas CLI - Manage the agent skills index")
@@ -88,6 +127,12 @@ def main():
     # stats command
     stats_parser = subparsers.add_parser("stats", help="Generate statistics from the index")
     stats_parser.set_defaults(func=cmd_stats)
+
+    # lint-skill command
+    lint_skill_parser = subparsers.add_parser("lint-skill", help="Lint a skill directory for frontmatter conformance")
+    lint_skill_parser.add_argument("directory", help="Path to skill directory containing SKILL.md")
+    lint_skill_parser.add_argument("--lenient", action="store_true", help="Use lenient parsing mode")
+    lint_skill_parser.set_defaults(func=cmd_lint_skill)
 
     args = parser.parse_args()
 
