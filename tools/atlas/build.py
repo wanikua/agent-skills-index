@@ -669,8 +669,7 @@ def build_index(
             "schema_version": "2.0.0",
             "generated_at": now.isoformat(),
             "description": (
-                "Skill Atlas — Machine-readable catalog of Agent Skills (SKILL.md). "
-                "Full catalog in skills.jsonl."
+                "Skill Atlas — Machine-readable catalog of Agent Skills (SKILL.md). Full catalog in skills.jsonl."
             ),
             "total_count": len(filtered_skills),
             "curated_count": sum(1 for s in filtered_skills if s.get("layer") == "curated"),

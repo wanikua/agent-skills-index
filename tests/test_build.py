@@ -2,13 +2,12 @@
 """Tests for the build command."""
 
 import json
-import subprocess
 import tempfile
 from pathlib import Path
 
 import pytest
 
-from tools.atlas import build, crawl
+from tools.atlas import build
 
 
 def create_test_crawl_output(tmpdir: Path) -> tuple[Path, Path]:
@@ -183,6 +182,10 @@ def test_build_determinism():
             assert s1["first_seen"] == s2["first_seen"]  # Should be same
             assert s1["hashes"] == s2["hashes"]  # Should be identical
 
+        # Skills.json wrapper should also be consistent
+        assert skills_json_1["schema_version"] == skills_json_2["schema_version"]
+        assert skills_json_1["total_count"] == skills_json_2["total_count"]
+
         # Stats should be identical except for generated_at
         assert stats_1["total_skills"] == stats_2["total_skills"]
         assert stats_1["by_license_class"] == stats_2["by_license_class"]
@@ -197,7 +200,7 @@ def test_stats_recomputable_from_skills():
         raw_dir, sources_file = create_test_crawl_output(tmpdir)
         index_dir = tmpdir / "index"
 
-        result = build.build_index(raw_dir, sources_file, index_dir, tmpdir)
+        build.build_index(raw_dir, sources_file, index_dir, tmpdir)
 
         # Load skills.jsonl
         skills = []
