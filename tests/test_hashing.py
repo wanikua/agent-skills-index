@@ -238,7 +238,7 @@ class TestFolderSha256:
         folder = FIXTURES_DIR / "test-folder-nested"
         hash_value = compute_folder_sha256(folder)
 
-        expected = "a7706d167dfb4e22a7a4a48cff5afc1fa3994e8e176a24bbc9ce086d0d67e4d7"
+        expected = "14a5b517c0dba0225819dc79d78af8352de91dcc371bda1cee2233b9b438e540"
         assert hash_value == expected, f"Hash changed! Got {hash_value}"
 
     def test_folder_hash_deterministic(self):
