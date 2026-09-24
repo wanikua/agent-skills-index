@@ -131,7 +131,11 @@ def cmd_build(args):
         return 1
 
     try:
-        result = build.build_index(raw_dir, sources_file, index_dir, repo_root)
+        check_refs = getattr(args, "check_refs", False)
+        if check_refs:
+            print("External reference checking enabled (S2-5)")
+
+        result = build.build_index(raw_dir, sources_file, index_dir, repo_root, check_external_refs=check_refs)
         print(f"✓ Built {result['skills_built']} skills from {result['sources_used']} sources")
         print(f"  - Total skills: {result['stats']['total_skills']}")
         print(f"  - Curated: {result['stats']['curated_skills']}")
@@ -321,6 +325,97 @@ def cmd_dedup(args):
     return 0
 
 
+def cmd_check_refs(args):
+    """Check external references in skills for dangling refs and deleted owners."""
+    import json
+    import logging
+    from pathlib import Path
+
+    from tools.atlas import check_refs
+
+    logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING)
+
+    repo_root = Path.cwd()
+    raw_dir = repo_root / "build" / "raw"
+
+    if not raw_dir.exists():
+        print(f"Error: {raw_dir} not found. Run 'atlas crawl' first.", file=sys.stderr)
+        return 1
+
+    # Find all skill files
+    skill_files = list(raw_dir.glob("*.jsonl"))
+    if not skill_files:
+        print(f"No skill files found in {raw_dir}", file=sys.stderr)
+        return 1
+
+    print(f"Checking external references in {len(skill_files)} source(s)...")
+
+    checker = check_refs.ReferenceChecker(timeout=args.timeout)
+    total_skills = 0
+    skills_with_dangling = 0
+    total_refs = 0
+    total_dangling = 0
+
+    for skill_file in skill_files:
+        source_id = skill_file.stem
+
+        if args.source and source_id != args.source:
+            continue
+
+        with open(skill_file) as f:
+            for line in f:
+                skill_data = json.loads(line)
+                total_skills += 1
+
+                result = check_refs.check_skill_references(skill_data, checker)
+
+                total_refs += len(result["external_refs"])
+                total_dangling += len(result["dangling_refs"])
+
+                if result["has_dangling"]:
+                    skills_with_dangling += 1
+                    if args.verbose:
+                        print(f"\n⚠️  Dangling refs in {skill_data.get('path', 'unknown')}:")
+                        for ref in result["dangling_refs"]:
+                            print(f"  - {ref}")
+
+    print(f"\n✓ Checked {total_skills} skill(s)")
+    print(f"  Total external references: {total_refs}")
+    print(f"  Dangling references: {total_dangling}")
+    print(f"  Skills with dangling refs: {skills_with_dangling}")
+
+    if args.check_owners:
+        # Check source owners
+        print("\nChecking source repository owners...")
+        sources_file = repo_root / "index" / "sources.json"
+
+        if not sources_file.exists():
+            print(f"Warning: {sources_file} not found, skipping owner checks")
+            return 0
+
+        with open(sources_file) as f:
+            sources_data = json.load(f)
+
+        sources = sources_data.get("repositories", [])
+        deleted_owners = []
+
+        for source in sources:
+            if args.source and source.get("id") != args.source:
+                continue
+
+            exists = check_refs.check_source_owner(source, checker)
+            if not exists:
+                deleted_owners.append(source.get("id"))
+                print(f"  ⚠️  DELETED OWNER: {source.get('url')}")
+
+        if deleted_owners:
+            print(f"\n⚠️  WARNING: {len(deleted_owners)} source(s) have deleted owners!")
+            print("These skills should be marked as 'dangling' and taken down.")
+            return 1
+
+    return 0 if skills_with_dangling == 0 else 1
+
+
 def main():
     """Main entry point for the atlas CLI."""
     parser = argparse.ArgumentParser(prog="atlas", description="Skill Atlas CLI - Manage the agent skills index")
@@ -342,6 +437,7 @@ def main():
 
     # build command
     build_parser = subparsers.add_parser("build", help="Build index files from crawled data")
+    build_parser.add_argument("--check-refs", action="store_true", help="Check external references (S2-5)")
     build_parser.set_defaults(func=cmd_build)
 
     # stats command
@@ -389,6 +485,18 @@ def main():
     dedup_parser.add_argument("--report", action="store_true", help="Show detailed duplicate cluster report")
     dedup_parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
     dedup_parser.set_defaults(func=cmd_dedup)
+
+    # check-refs command
+    check_refs_parser = subparsers.add_parser(
+        "check-refs", help="Check external references for dangling refs and deleted owners (S2-5)"
+    )
+    check_refs_parser.add_argument("--source", help="Specific source ID to check")
+    check_refs_parser.add_argument("--check-owners", action="store_true", help="Also check if source owners exist")
+    check_refs_parser.add_argument(
+        "--timeout", type=float, default=10.0, help="Network timeout in seconds (default: 10)"
+    )
+    check_refs_parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
+    check_refs_parser.set_defaults(func=cmd_check_refs)
 
     args = parser.parse_args()
 
