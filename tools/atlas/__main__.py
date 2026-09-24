@@ -203,6 +203,14 @@ def cmd_sources_import(args):
         return 1
 
 
+def cmd_discover(args):
+    """Discover skill repositories from aggregator READMEs."""
+    from tools.atlas.discover import run_discover
+
+    output_path = Path(args.output) if args.output else Path("build/candidates.jsonl")
+    return run_discover(output_path)
+
+
 def main():
     """Main entry point for the atlas CLI."""
     parser = argparse.ArgumentParser(prog="atlas", description="Skill Atlas CLI - Manage the agent skills index")
@@ -244,6 +252,22 @@ def main():
     import_parser = sources_subparsers.add_parser("import", help="Import sources from a JSON file")
     import_parser.add_argument("file", help="Path to JSON file with sources to import")
     import_parser.set_defaults(func=cmd_sources_import)
+
+    # discover command
+    discover_parser = subparsers.add_parser(
+        "discover", help="Discover skill repositories from aggregator READMEs (tier-3 sources)"
+    )
+    discover_parser.add_argument(
+        "mode",
+        nargs="?",
+        default="awesome",
+        choices=["awesome"],
+        help="Discovery mode (currently only 'awesome' is supported)",
+    )
+    discover_parser.add_argument(
+        "-o", "--output", help="Output path for candidates.jsonl (default: build/candidates.jsonl)"
+    )
+    discover_parser.set_defaults(func=cmd_discover)
 
     args = parser.parse_args()
 
