@@ -1,0 +1,794 @@
+{
+  "description": "Skill Atlas seed batch 1 — research snapshot 2026-09-24. Input for docs/PLAN.md task S1-2 (populate index/sources.json). Values marked 'observed' were read from shallow clones on 2026-09-24; stars are third-party estimates. Re-verify at crawl time; do not copy counts into README.",
+  "source_table": "seeds-licensing.md §1",
+  "generated_at": "2026-09-24",
+  "seeds": [
+    {
+      "id": "anthropic-skills",
+      "url": "https://github.com/anthropics/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "none at root (GitHub: not specified)",
+      "per_skill_license_varies": "y: per-skill LICENSE.txt, 14 Apache-2.0, 4 proprietary (docx/pdf/pptx/xlsx), 2 none (doc-coauthoring, template)",
+      "skill_md_count_observed": "20",
+      "last_commit_observed": "2026-09-10",
+      "stars_estimate": "177,828",
+      "curated_policy": "per-skill",
+      "curated_eligible_note": "partial 14 yes / 4 no / 2 hold",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "anthropic-claude-plugins-official",
+      "url": "https://github.com/anthropics/claude-plugins-official",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "{plugins,external_plugins}/*/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "y: 18 plugin-level LICENSEs; `plugins/claude-security` proprietary",
+      "skill_md_count_observed": "31/27",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "36,663",
+      "curated_policy": "per-skill",
+      "curated_eligible_note": "partial 26 yes, 1 no",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "anthropic-knowledge-work-plugins",
+      "url": "https://github.com/anthropics/knowledge-work-plugins",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "**/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "y: 17 plugin LICENSEs (13 Apache, 4 MIT)",
+      "skill_md_count_observed": "252/232",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "≈26k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes (attribution per plugin)",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "openai-skills",
+      "url": "https://github.com/openai/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/.{curated,system}/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "none at root",
+      "per_skill_license_varies": "y: 31 Apache-2.0, 5 MIT (Notion Labs, Vercel), 8 Figma Developer Terms",
+      "skill_md_count_observed": "44/43",
+      "last_commit_observed": "2026-06-23",
+      "stars_estimate": "27,591",
+      "curated_policy": "per-skill",
+      "curated_eligible_note": "partial 35 yes as frozen snapshot, 8 no",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "openai-plugins",
+      "url": "https://github.com/openai/plugins",
+      "owner_type": "vendor (bundles 3rd-party)",
+      "tier": 1,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "none",
+      "per_skill_license_varies": "y: 118 allow, 13 deny, 387 unk",
+      "skill_md_count_observed": "536/518",
+      "last_commit_observed": "2026-09-11",
+      "stars_estimate": "7,137",
+      "curated_policy": "per-skill",
+      "curated_eligible_note": "partial ≈118 yes; rest pointer-only",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "google-skills",
+      "url": "https://github.com/google/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/**/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "plugins/**"
+      ],
+      "follow_symlinks": false,
+      "pattern_notes": "plugins/** are copies of skills/**",
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "152/147",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "20,324",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "google-gemini-skills",
+      "url": "https://github.com/google-gemini/gemini-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "3",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "≈4.2k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "firebase-agent-skills",
+      "url": "https://github.com/firebase/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "13",
+      "last_commit_observed": "2026-09-22",
+      "stars_estimate": "≈453",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "microsoft-skills",
+      "url": "https://github.com/microsoft/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        ".github/plugins/*/skills/*/SKILL.md",
+        ".github/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": "60 symlinks in tree: never follow symlinks",
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n (181 frontmatter MIT)",
+      "skill_md_count_observed": "204/202",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "≈3.1k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "microsoft-azure-skills",
+      "url": "https://github.com/microsoft/azure-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        ".github/plugins/**"
+      ],
+      "follow_symlinks": false,
+      "pattern_notes": ".github/plugins/** holds copies",
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "84/47",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "≈1.5k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "dotnet-skills",
+      "url": "https://github.com/dotnet/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "108",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "≈5.5k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "github-awesome-copilot",
+      "url": "https://github.com/github/awesome-copilot",
+      "owner_type": "vendor host, community-contributed",
+      "tier": 1,
+      "include_patterns": [
+        "skills/**/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "y: 8 skill-level LICENSEs, 1 NOTICE, 7 frontmatter/file conflicts",
+      "skill_md_count_observed": "441",
+      "last_commit_observed": "2026-09-24",
+      "stars_estimate": "39,323",
+      "curated_policy": "per-skill",
+      "curated_eligible_note": "yes (review the 7 conflicts)",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "vercel-agent-skills",
+      "url": "https://github.com/vercel-labs/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "no LICENSE file; README says \"MIT\"",
+      "per_skill_license_varies": "y: 4 frontmatter MIT, 5 none",
+      "skill_md_count_observed": "9",
+      "last_commit_observed": "2026-08-28",
+      "stars_estimate": "31,491",
+      "curated_policy": "per-skill",
+      "curated_eligible_note": "partial 4 yes, 5 hold",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "huggingface-skills",
+      "url": "https://github.com/huggingface/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md",
+        "hf-mcp/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "26",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "11,092",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "cloudflare-skills",
+      "url": "https://github.com/cloudflare/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "14",
+      "last_commit_observed": "2026-09-22",
+      "stars_estimate": "≈2.9k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "supabase-agent-skills",
+      "url": "https://github.com/supabase/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "2",
+      "last_commit_observed": "2026-08-12",
+      "stars_estimate": "≈2.6k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "stripe-ai",
+      "url": "https://github.com/stripe/ai",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "providers/**"
+      ],
+      "follow_symlinks": false,
+      "pattern_notes": "providers/* holds 5 copies",
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "60/10",
+      "last_commit_observed": "2026-09-24",
+      "stars_estimate": "≈1.8k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "sentry-for-ai",
+      "url": "https://github.com/getsentry/sentry-for-ai",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "src/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "skills-legacy/**"
+      ],
+      "follow_symlinks": false,
+      "pattern_notes": "skills-legacy/* is frozen legacy; frontmatter says Apache-2.0 while repo LICENSE is MIT",
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "y: all 34 frontmatter say Apache-2.0",
+      "skill_md_count_observed": "34",
+      "last_commit_observed": "2026-09-21",
+      "stars_estimate": "≈266",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes, shipping both license texts",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "sentry-skills",
+      "url": "https://github.com/getsentry/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "y: `security-review` CC-BY-SA-4.0 (OWASP-derived)",
+      "skill_md_count_observed": "27",
+      "last_commit_observed": "2026-08-25",
+      "stars_estimate": "≈1k",
+      "curated_policy": "per-skill",
+      "curated_eligible_note": "partial 26 yes, 1 conditional",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "neon-agent-skills",
+      "url": "https://github.com/neondatabase/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "plugins/**"
+      ],
+      "follow_symlinks": false,
+      "pattern_notes": "plugins/** holds copies",
+      "repo_license_observed": "Apache-2.0",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "17/9",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "≈90",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "expo-skills",
+      "url": "https://github.com/expo/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "26",
+      "last_commit_observed": "2026-09-22",
+      "stars_estimate": "≈2.6k",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "notion-skills",
+      "url": "https://github.com/makenotion/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT (LICENSE.md)",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "2",
+      "last_commit_observed": "2026-09-22",
+      "stars_estimate": "≈168",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "hashicorp-agent-skills",
+      "url": "https://github.com/hashicorp/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MPL-2.0",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "20",
+      "last_commit_observed": "2026-09-03",
+      "stars_estimate": "≈873",
+      "curated_policy": "conditional",
+      "curated_eligible_note": "conditional (MPL-2.0)",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "remotion-skills",
+      "url": "https://github.com/remotion-dev/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "none (no LICENSE, frontmatter or package.json license)",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "12",
+      "last_commit_observed": "2026-09-22",
+      "stars_estimate": "≈4.7k",
+      "curated_policy": "pointer-only",
+      "curated_eligible_note": "no: Unknown, pointer-only",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "figma-mcp-server-guide",
+      "url": "https://github.com/figma/mcp-server-guide",
+      "owner_type": "vendor",
+      "tier": 1,
+      "include_patterns": [
+        "{skills,skills-figquery,workflow-skills}/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "none; README points to Figma Developer Terms",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "30/16",
+      "last_commit_observed": "2026-09-22",
+      "stars_estimate": "≈2k",
+      "curated_policy": "pointer-only",
+      "curated_eligible_note": "no: terms grant use only",
+      "refresh": "daily",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "obra-superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "owner_type": "community",
+      "tier": 2,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "15",
+      "last_commit_observed": "2026-09-18",
+      "stars_estimate": "290,678",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "mattpocock-skills",
+      "url": "https://github.com/mattpocock/skills",
+      "owner_type": "community",
+      "tier": 2,
+      "include_patterns": [
+        "skills/*/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "skills/in-progress/**"
+      ],
+      "follow_symlinks": false,
+      "pattern_notes": "exclude in-progress skills (verify exact path at crawl time)",
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "38 (9 in-progress)",
+      "last_commit_observed": "2026-09-18",
+      "stars_estimate": "268,489",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "addyosmani-agent-skills",
+      "url": "https://github.com/addyosmani/agent-skills",
+      "owner_type": "community",
+      "tier": 2,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "25",
+      "last_commit_observed": "2026-09-22",
+      "stars_estimate": "98,713",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "kepano-obsidian-skills",
+      "url": "https://github.com/kepano/obsidian-skills",
+      "owner_type": "community",
+      "tier": 2,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "6",
+      "last_commit_observed": "2026-09-15",
+      "stars_estimate": "48,813",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "kdense-scientific-agent-skills",
+      "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
+      "owner_type": "community (company)",
+      "tier": 2,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT (LICENSE.md)",
+      "per_skill_license_varies": "y: frontmatter includes BSD/Apache/GPL/PolyForm-NC/URLs/\"Unknown\", plus 4 copies of Anthropic proprietary skills",
+      "skill_md_count_observed": "166",
+      "last_commit_observed": "2026-09-21",
+      "stars_estimate": "46,340",
+      "curated_policy": "per-skill",
+      "curated_eligible_note": "partial ≈144 yes / 6 no / 16 review",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "wshobson-agents",
+      "url": "https://github.com/wshobson/agents",
+      "owner_type": "community",
+      "tier": 2,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "183",
+      "last_commit_observed": "2026-09-13",
+      "stars_estimate": "39,911",
+      "curated_policy": "allow",
+      "curated_eligible_note": "yes",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "trailofbits-skills",
+      "url": "https://github.com/trailofbits/skills",
+      "owner_type": "community (security firm)",
+      "tier": 2,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "CC-BY-SA-4.0",
+      "per_skill_license_varies": "n",
+      "skill_md_count_observed": "85",
+      "last_commit_observed": "2026-09-21",
+      "stars_estimate": "≈7.2k",
+      "curated_policy": "conditional",
+      "curated_eligible_note": "conditional (ShareAlike)",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "composio-awesome-claude-skills",
+      "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "owner_type": "aggregator",
+      "tier": 3,
+      "include_patterns": [
+        "*/SKILL.md",
+        "composio-skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": null,
+      "repo_license_observed": "no LICENSE file; README says Apache-2.0",
+      "per_skill_license_varies": "y: includes copies of Anthropic proprietary `document-skills/*`",
+      "skill_md_count_observed": "864",
+      "last_commit_observed": "2026-07-24",
+      "stars_estimate": "75,557",
+      "curated_policy": "discovery-only",
+      "curated_eligible_note": "no: discovery only",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "sickn33-agentic-awesome-skills",
+      "url": "https://github.com/sickn33/agentic-awesome-skills",
+      "owner_type": "aggregator/mirror",
+      "tier": 3,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": "tree contains 3 copies of many skills; discovery-only",
+      "repo_license_observed": "MIT (code) + `LICENSE-CONTENT` CC-BY-4.0",
+      "per_skill_license_varies": "y: `*-official` copies of Anthropic proprietary skills; AGPL; FSL-1.1-ALv2",
+      "skill_md_count_observed": "7,653/2,451",
+      "last_commit_observed": "2026-09-24",
+      "stars_estimate": "46,836",
+      "curated_policy": "discovery-only",
+      "curated_eligible_note": "no: discovery only",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "voltagent-awesome-agent-skills",
+      "url": "https://github.com/VoltAgent/awesome-agent-skills",
+      "owner_type": "aggregator (link list)",
+      "tier": 3,
+      "include_patterns": [],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": "link list: harvest upstream GitHub links from README only",
+      "repo_license_observed": "MIT",
+      "per_skill_license_varies": "n/a",
+      "skill_md_count_observed": "0",
+      "last_commit_observed": "2026-09-23",
+      "stars_estimate": "≈35k",
+      "curated_policy": "discovery-only",
+      "curated_eligible_note": "n/a",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    },
+    {
+      "id": "travisvn-awesome-claude-skills",
+      "url": "https://github.com/travisvn/awesome-claude-skills",
+      "owner_type": "aggregator (link list)",
+      "tier": 3,
+      "include_patterns": [],
+      "exclude_patterns": [],
+      "follow_symlinks": false,
+      "pattern_notes": "link list: harvest upstream GitHub links from README only",
+      "repo_license_observed": "none",
+      "per_skill_license_varies": "n/a",
+      "skill_md_count_observed": "0",
+      "last_commit_observed": "2026-04-28",
+      "stars_estimate": "≈15k",
+      "curated_policy": "discovery-only",
+      "curated_eligible_note": "n/a",
+      "refresh": "weekly",
+      "observed_at": "2026-09-24"
+    }
+  ],
+  "batch_2_backlog": [
+    "langchain-ai/langchain-skills",
+    "flutter/skills",
+    "NVIDIA/skills",
+    "Shopify/shopify-ai-toolkit",
+    "cloudflare/security-audit-skill",
+    "google-labs-code/stitch-skills",
+    "callstackincubator/agent-skills",
+    "better-auth/skills",
+    "clerk/skills",
+    "firecrawl/skills",
+    "tavily-ai/skills",
+    "coreyhaines31/marketingskills",
+    "emilkowalski/skills",
+    "prisma/skills"
+  ],
+  "field_notes": {
+    "curated_policy": "allow = repo-level license is on the auto-allow list (still resolve per skill); per-skill = licenses differ per skill, resolve each; conditional = MPL-2.0 / CC-BY-SA-4.0, needs maintainer approval (see PLAN decision D3); pointer-only = source layer only (no redistribution rights); discovery-only = aggregator, harvest upstream links, never curate copies",
+    "skill_md_count_observed": "'a/b' means a SKILL.md files, b unique skill names"
+  }
+}

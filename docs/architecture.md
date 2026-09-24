@@ -362,6 +362,8 @@ Goal: Understand ecosystem health and prioritize curation efforts.
 
 ## Roadmap
 
+> **Superseded.** The executable roadmap now lives in [`PLAN.md`](PLAN.md), updated on 2026-09-24 from the landscape research in [`research/2026-09-24/`](research/2026-09-24/README.md). It changes several decisions below: location-based skill IDs, no required `version` field, per-skill license resolution, security gates before scale-out, and the router moved to `skills/skill-atlas/`. The list below is kept only for history.
+
 ### v0 (Current)
 - ✅ Repository structure
 - ✅ Index schema

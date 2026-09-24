@@ -67,6 +67,10 @@ Submit a PR updating [`index/sources.json`](index/sources.json) with:
 
 See [`docs/architecture.md`](docs/architecture.md) for technical details.
 
+## Roadmap
+
+The step-by-step execution plan is [`docs/PLAN.md`](docs/PLAN.md). The research it is based on is in [`docs/research/2026-09-24/`](docs/research/2026-09-24/README.md).
+
 ## Index Statistics
 
 - **Curated Skills:** See [`index/skills.json`](index/skills.json)
