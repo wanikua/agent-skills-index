@@ -41,9 +41,11 @@ def test_validate_command():
 
 
 def test_crawl_command():
-    """Test that atlas crawl runs without error."""
+    """Test that atlas crawl requires arguments."""
+    # Without arguments, should show error
     result = subprocess.run([sys.executable, "-m", "tools.atlas", "crawl"], capture_output=True, text=True, timeout=5)
-    assert result.returncode == 0
+    assert result.returncode == 1
+    assert "--source" in result.stderr or "--all" in result.stderr
 
 
 def test_build_command():
