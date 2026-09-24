@@ -1,18 +1,28 @@
 #!/usr/bin/env python3
 """Near-duplicate detection using MinHash LSH for Skill Atlas (S2-3)."""
 
+from __future__ import annotations
+
 import logging
 import re
 from collections import defaultdict
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from datasketch import MinHash
 
 try:
-    from datasketch import MinHash, MinHashLSH
+    from datasketch import MinHash as _MinHash
+    from datasketch import MinHashLSH
     from rapidfuzz import fuzz
 
     NEARDUP_AVAILABLE = True
+    MinHash = _MinHash
 except ImportError:
     NEARDUP_AVAILABLE = False
+    MinHash = None  # type: ignore
+    MinHashLSH = None  # type: ignore
+    fuzz = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -300,7 +310,6 @@ def find_near_duplicates(
         union(id_a, id_b)
 
     # Build clusters
-
     clusters = defaultdict(list)
     all_skill_ids = set(body_texts.keys())
 
