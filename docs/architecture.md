@@ -1,6 +1,6 @@
 # Skill Atlas Architecture
 
-This document describes the technical architecture of Skill Atlas, the largest and most complete Agent Skills Index.
+This document describes the technical architecture of Skill Atlas, an open, machine-readable Agent Skills Index.
 
 ---
 
