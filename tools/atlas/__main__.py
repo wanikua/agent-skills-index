@@ -101,6 +101,19 @@ def cmd_lint_skill(args):
     return 0 if result.lenient_valid else 1
 
 
+def cmd_sources_import(args):
+    """Import sources from a JSON file."""
+    from tools.atlas.sources import import_sources
+
+    try:
+        count = import_sources(args.file)
+        print(f"✓ Successfully imported {count} sources")
+        return 0
+    except Exception as e:
+        print(f"✗ Import failed: {e}", file=sys.stderr)
+        return 1
+
+
 def main():
     """Main entry point for the atlas CLI."""
     parser = argparse.ArgumentParser(prog="atlas", description="Skill Atlas CLI - Manage the agent skills index")
@@ -133,6 +146,15 @@ def main():
     lint_skill_parser.add_argument("directory", help="Path to skill directory containing SKILL.md")
     lint_skill_parser.add_argument("--lenient", action="store_true", help="Use lenient parsing mode")
     lint_skill_parser.set_defaults(func=cmd_lint_skill)
+
+    # sources command
+    sources_parser = subparsers.add_parser("sources", help="Manage source repositories")
+    sources_subparsers = sources_parser.add_subparsers(dest="sources_command", help="Source commands")
+
+    # sources import subcommand
+    import_parser = sources_subparsers.add_parser("import", help="Import sources from a JSON file")
+    import_parser.add_argument("file", help="Path to JSON file with sources to import")
+    import_parser.set_defaults(func=cmd_sources_import)
 
     args = parser.parse_args()
 

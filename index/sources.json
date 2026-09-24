@@ -1,7 +1,565 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-09-24T09:39:00Z",
+  "generated_at": "2026-09-24T09:51:19.472831+00:00",
   "description": "Skill Atlas — Repository and source catalog. Early preview: sources are being registered.",
-  "total_repositories": 0,
-  "repositories": []
+  "total_repositories": 36,
+  "repositories": [
+    {
+      "id": "anthropic-skills",
+      "url": "https://github.com/anthropics/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: per-skill | Eligible: partial 14 yes / 4 no / 2 hold"
+    },
+    {
+      "id": "anthropic-claude-plugins-official",
+      "url": "https://github.com/anthropics/claude-plugins-official",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "{plugins,external_plugins}/*/skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: per-skill | Eligible: partial 26 yes, 1 no"
+    },
+    {
+      "id": "anthropic-knowledge-work-plugins",
+      "url": "https://github.com/anthropics/knowledge-work-plugins",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "**/skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes (attribution per plugin)"
+    },
+    {
+      "id": "openai-skills",
+      "url": "https://github.com/openai/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/.{curated,system}/*/SKILL.md"
+      ],
+      "notes": "Curated policy: per-skill | Eligible: partial 35 yes as frozen snapshot, 8 no"
+    },
+    {
+      "id": "openai-plugins",
+      "url": "https://github.com/openai/plugins",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: per-skill | Eligible: partial ≈118 yes; rest pointer-only"
+    },
+    {
+      "id": "google-skills",
+      "url": "https://github.com/google/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/**/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "plugins/**"
+      ],
+      "notes": "Pattern: plugins/** are copies of skills/** | Eligible: yes"
+    },
+    {
+      "id": "google-gemini-skills",
+      "url": "https://github.com/google-gemini/gemini-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "firebase-agent-skills",
+      "url": "https://github.com/firebase/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "microsoft-skills",
+      "url": "https://github.com/microsoft/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        ".github/plugins/*/skills/*/SKILL.md",
+        ".github/skills/*/SKILL.md"
+      ],
+      "notes": "Pattern: 60 symlinks in tree: never follow symlinks | Eligible: yes"
+    },
+    {
+      "id": "microsoft-azure-skills",
+      "url": "https://github.com/microsoft/azure-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        ".github/plugins/**"
+      ],
+      "notes": "Pattern: .github/plugins/** holds copies | Eligible: yes"
+    },
+    {
+      "id": "dotnet-skills",
+      "url": "https://github.com/dotnet/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "github-awesome-copilot",
+      "url": "https://github.com/github/awesome-copilot",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/**/SKILL.md"
+      ],
+      "notes": "Curated policy: per-skill | Eligible: yes (review the 7 conflicts)"
+    },
+    {
+      "id": "vercel-agent-skills",
+      "url": "https://github.com/vercel-labs/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: per-skill | Eligible: partial 4 yes, 5 hold"
+    },
+    {
+      "id": "huggingface-skills",
+      "url": "https://github.com/huggingface/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md",
+        "hf-mcp/skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "cloudflare-skills",
+      "url": "https://github.com/cloudflare/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "supabase-agent-skills",
+      "url": "https://github.com/supabase/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "stripe-ai",
+      "url": "https://github.com/stripe/ai",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "providers/**"
+      ],
+      "notes": "Pattern: providers/* holds 5 copies | Eligible: yes"
+    },
+    {
+      "id": "sentry-for-ai",
+      "url": "https://github.com/getsentry/sentry-for-ai",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "src/skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "skills-legacy/**"
+      ],
+      "notes": "Pattern: skills-legacy/* is frozen legacy; frontmatter says Apache-2.0 while repo LICENSE is MIT | Eligible: yes, shipping both license texts"
+    },
+    {
+      "id": "sentry-skills",
+      "url": "https://github.com/getsentry/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: per-skill | Eligible: partial 26 yes, 1 conditional"
+    },
+    {
+      "id": "neon-agent-skills",
+      "url": "https://github.com/neondatabase/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "plugins/**"
+      ],
+      "notes": "Pattern: plugins/** holds copies | Eligible: yes"
+    },
+    {
+      "id": "expo-skills",
+      "url": "https://github.com/expo/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "notion-skills",
+      "url": "https://github.com/makenotion/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "hashicorp-agent-skills",
+      "url": "https://github.com/hashicorp/agent-skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: conditional | Eligible: conditional (MPL-2.0)"
+    },
+    {
+      "id": "remotion-skills",
+      "url": "https://github.com/remotion-dev/skills",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: pointer-only | Eligible: no: Unknown, pointer-only"
+    },
+    {
+      "id": "figma-mcp-server-guide",
+      "url": "https://github.com/figma/mcp-server-guide",
+      "owner_type": "vendor",
+      "tier": 1,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "{skills,skills-figquery,workflow-skills}/*/SKILL.md"
+      ],
+      "notes": "Curated policy: pointer-only | Eligible: no: terms grant use only"
+    },
+    {
+      "id": "obra-superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "owner_type": "community",
+      "tier": 2,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "mattpocock-skills",
+      "url": "https://github.com/mattpocock/skills",
+      "owner_type": "community",
+      "tier": 2,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/*/SKILL.md"
+      ],
+      "exclude_patterns": [
+        "skills/in-progress/**"
+      ],
+      "notes": "Pattern: exclude in-progress skills (verify exact path at crawl time) | Eligible: yes"
+    },
+    {
+      "id": "addyosmani-agent-skills",
+      "url": "https://github.com/addyosmani/agent-skills",
+      "owner_type": "community",
+      "tier": 2,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "kepano-obsidian-skills",
+      "url": "https://github.com/kepano/obsidian-skills",
+      "owner_type": "community",
+      "tier": 2,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "kdense-scientific-agent-skills",
+      "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
+      "owner_type": "community",
+      "tier": 2,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: per-skill | Eligible: partial ≈144 yes / 6 no / 16 review"
+    },
+    {
+      "id": "wshobson-agents",
+      "url": "https://github.com/wshobson/agents",
+      "owner_type": "community",
+      "tier": 2,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "notes": "Eligible: yes"
+    },
+    {
+      "id": "trailofbits-skills",
+      "url": "https://github.com/trailofbits/skills",
+      "owner_type": "community",
+      "tier": 2,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "plugins/*/skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: conditional | Eligible: conditional (ShareAlike)"
+    },
+    {
+      "id": "composio-awesome-claude-skills",
+      "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "owner_type": "aggregator",
+      "tier": 3,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "*/SKILL.md",
+        "composio-skills/*/SKILL.md"
+      ],
+      "notes": "Curated policy: discovery-only | Eligible: no: discovery only"
+    },
+    {
+      "id": "sickn33-agentic-awesome-skills",
+      "url": "https://github.com/sickn33/agentic-awesome-skills",
+      "owner_type": "aggregator",
+      "tier": 3,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skills/*/SKILL.md"
+      ],
+      "notes": "Pattern: tree contains 3 copies of many skills; discovery-only | Curated policy: discovery-only | Eligible: no: discovery only"
+    },
+    {
+      "id": "voltagent-awesome-agent-skills",
+      "url": "https://github.com/VoltAgent/awesome-agent-skills",
+      "owner_type": "aggregator",
+      "tier": 3,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [],
+      "notes": "Pattern: link list: harvest upstream GitHub links from README only | Curated policy: discovery-only | Eligible: n/a"
+    },
+    {
+      "id": "travisvn-awesome-claude-skills",
+      "url": "https://github.com/travisvn/awesome-claude-skills",
+      "owner_type": "aggregator",
+      "tier": 3,
+      "status": "active",
+      "added_at": "2026-09-24T09:51:19.472831+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [],
+      "notes": "Pattern: link list: harvest upstream GitHub links from README only | Curated policy: discovery-only | Eligible: n/a"
+    }
+  ]
 }
