@@ -455,6 +455,11 @@ def crawl_source(
                 "path": path,
                 "skill_dir": skill_dir,
                 "blob_sha": entry["sha"],
+                "content": (
+                    skill_content.decode("utf-8", errors="replace")
+                    if isinstance(skill_content, bytes)
+                    else skill_content
+                ),
                 "skill_md_sha256": skill_md_sha256,
                 "folder_sha256": folder_sha256,
                 "has_scripts": has_scripts,
