@@ -1,0 +1,104 @@
+# Operating System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+vendor/
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
+build/
+out/
+*.pyc
+__pycache__/
+*.egg-info/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+secrets/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/
+
+# Testing
+coverage/
+.nyc_output/
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Generated files (if we add automation)
+generated/
+.generated/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Mac metadata
+.Trashes
+.fseventsd
+
+# Archives (don't commit zips/tars of the repo)
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Site-specific (if we add a static site generator)
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# Python
+venv/
+env/
+ENV/
+.venv/
+
+# Ruby
+.bundle/
+Gemfile.lock
+
+# Ignore private work-in-progress directories
+wip/
+scratch/
+drafts/
