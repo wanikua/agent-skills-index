@@ -342,10 +342,7 @@ def cmd_gate(args):
     import json
     from pathlib import Path
 
-    # For now, only support checking curated gate
-    if args.gate != "curated":
-        print(f"Error: Gate '{args.gate}' not implemented", file=sys.stderr)
-        return 1
+    from tools.atlas import gate
 
     # Load skill record
     skill_id = args.skill_id
@@ -369,20 +366,139 @@ def cmd_gate(args):
         return 1
 
     # Check gate
-    from tools.atlas import security
+    if args.gate == "source":
+        result = gate.gate_source(skill)
+    elif args.gate == "curated":
+        result = gate.gate_curated(skill)
+    else:
+        print(f"Error: Unknown gate type '{args.gate}'", file=sys.stderr)
+        return 1
 
-    passes, reasons = security.gate_curated(skill)
+    # Output
+    if args.json:
+        print(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
+    else:
+        print(f"Skill: {skill_id}")
+        print(f"Gate: {args.gate}")
+        print(f"Result: {'✓ PASS' if result.passes else '✗ FAIL'}")
 
-    print(f"Skill: {skill_id}")
-    print("Gate: curated")
-    print(f"Result: {'✓ PASS' if passes else '✗ FAIL'}")
+        if result.reasons:
+            print("\nReasons:")
+            for reason in result.reasons:
+                print(f"  - {reason}")
 
-    if reasons:
-        print("\nReasons:")
-        for reason in reasons:
-            print(f"  - {reason}")
+    return 0 if result.passes else 1
 
-    return 0 if passes else 1
+
+def cmd_check_curated_gate(args):
+    """Check if curated skills still pass the gate (regression watcher)."""
+    import json
+    import os
+    import subprocess
+    from pathlib import Path
+
+    from tools.atlas import gate
+
+    repo_root = Path.cwd()
+
+    # Check for failing skills
+    print("Scanning curated skills for gate regressions...")
+    failing = gate.check_curated_regression(repo_root)
+
+    if not failing:
+        print("✓ All curated skills pass the gate")
+        return 0
+
+    print(f"\n✗ Found {len(failing)} curated skills that no longer pass the gate:\n")
+
+    for skill_id, result in failing:
+        print(f"  {skill_id}")
+        for reason in result.reasons:
+            print(f"    - {reason}")
+        print()
+
+    # Update status to 'review' in index (unless --dry-run)
+    if args.dry_run:
+        print("--dry-run mode: not updating index or creating issues")
+        return 1
+
+    # Update index
+    index_file = repo_root / "index" / "skills.jsonl"
+    updated_skills = []
+    skill_ids_to_update = {skill_id for skill_id, _ in failing}
+
+    with open(index_file, encoding="utf-8") as f:
+        for line in f:
+            skill = json.loads(line)
+            if skill.get("id") in skill_ids_to_update:
+                # Mark as review
+                if skill.get("status") != "review":
+                    skill["status"] = "review"
+                    print(f"Marked {skill['id']} as 'review'")
+            updated_skills.append(skill)
+
+    # Write back
+    with open(index_file, "w", encoding="utf-8") as f:
+        for skill in updated_skills:
+            f.write(json.dumps(skill, ensure_ascii=False) + "\n")
+
+    # Create GitHub issues (if GITHUB_TOKEN or GH_TOKEN available)
+    gh_token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if not gh_token:
+        print("\nNo GITHUB_TOKEN/GH_TOKEN found, skipping issue creation")
+        print("(Issues would be created in CI with proper credentials)")
+        return 1
+
+    # Check if gh CLI is available
+    try:
+        subprocess.run(["gh", "--version"], capture_output=True, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("\ngh CLI not available, skipping issue creation")
+        return 1
+
+    # Create issues
+    print("\nCreating GitHub issues for failing skills...")
+    for skill_id, result in failing:
+        title = f"[Gate Regression] {skill_id} no longer passes curated gate"
+        body = f"""## Skill Gate Regression
+
+**Skill ID:** `{skill_id}`
+**Gate:** curated
+
+This skill was previously in the curated layer but no longer passes the curated gate.
+
+### Reasons:
+
+"""
+        for reason in result.reasons:
+            body += f"- {reason}\n"
+
+        body += """
+
+### Action Required
+
+Please review this skill and either:
+1. Fix the issues that caused the gate failure
+2. Remove the skill from the curated layer
+3. Update the gate requirements if they are too strict
+
+**DO NOT** auto-delete this skill. Human review is required.
+"""
+
+        # Create issue
+        try:
+            result_proc = subprocess.run(
+                ["gh", "issue", "create", "--title", title, "--body", body, "--label", "gate-regression"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            issue_url = result_proc.stdout.strip()
+            print(f"  Created issue for {skill_id}: {issue_url}")
+        except subprocess.CalledProcessError as e:
+            print(f"  Failed to create issue for {skill_id}: {e.stderr}")
+
+    return 1
 
 
 def cmd_discover(args):
@@ -628,7 +744,17 @@ def main():
     gate_parser = subparsers.add_parser("gate", help="Check if a skill meets gate requirements (S2-7)")
     gate_parser.add_argument("gate", choices=["source", "curated"], help="Gate to check")
     gate_parser.add_argument("skill_id", help="Skill ID to check")
+    gate_parser.add_argument("--json", action="store_true", help="Output as JSON")
     gate_parser.set_defaults(func=cmd_gate)
+
+    # check-curated-gate command (regression watcher)
+    check_curated_gate_parser = subparsers.add_parser(
+        "check-curated-gate", help="Check if curated skills still pass the gate (S2-7 regression watcher)"
+    )
+    check_curated_gate_parser.add_argument(
+        "--dry-run", action="store_true", help="Report issues without updating index or creating GitHub issues"
+    )
+    check_curated_gate_parser.set_defaults(func=cmd_check_curated_gate)
 
     # dedup command
     dedup_parser = subparsers.add_parser("dedup", help="Analyze and apply deduplication to the index")
