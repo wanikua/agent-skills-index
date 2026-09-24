@@ -712,6 +712,12 @@ def build_index(
 
     skills = apply_deduplication(skills)
 
+    # Apply near-duplicate detection (S2-3)
+    logger.info("Applying near-duplicate detection...")
+    from tools.atlas.neardup import apply_near_deduplication
+
+    skills = apply_near_deduplication(skills)
+
     # Build skills by ID dict
     new_skills_by_id = {s["id"]: s for s in skills}
 
