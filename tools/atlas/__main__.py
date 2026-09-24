@@ -190,6 +190,49 @@ def cmd_lint_skill(args):
     return 0 if result.lenient_valid else 1
 
 
+def cmd_lint_quality(args):
+    """Lint a skill directory for quality issues."""
+    from pathlib import Path
+
+    from tools.atlas.frontmatter import parse_content
+    from tools.atlas.quality import lint_quality
+
+    skill_dir = Path(args.directory).resolve()
+
+    if not skill_dir.is_dir():
+        print(f"Error: {skill_dir} is not a directory", file=sys.stderr)
+        return 1
+
+    skill_md = skill_dir / "SKILL.md"
+    if not skill_md.exists():
+        print(f"Error: SKILL.md not found in {skill_dir}", file=sys.stderr)
+        return 1
+
+    # Read content and parse frontmatter to get name and description
+    content = skill_md.read_text(encoding="utf-8")
+    fm_result = parse_content(content, skill_dir.name)
+
+    name = fm_result.get("frontmatter", {}).get("name")
+    description = fm_result.get("frontmatter", {}).get("description")
+
+    # Run quality linting
+    result = lint_quality(skill_md_path=skill_md, name=name, description=description)
+
+    # Print results
+    print(f"Skill directory: {skill_dir}")
+    print(f"Quality check: {'✓ PASS' if len(result.smells) == 0 else '✗ FAIL'}")
+
+    if result.smells:
+        print(f"\nQuality smells detected ({len(result.smells)}):")
+        for smell in result.smells:
+            print(f"  - {smell}")
+    else:
+        print("\nNo quality issues detected.")
+
+    # Return 0 for pass, 1 for smells detected
+    return 0 if len(result.smells) == 0 else 1
+
+
 def cmd_sources_import(args):
     """Import sources from a JSON file."""
     from tools.atlas.sources import import_sources
@@ -243,6 +286,11 @@ def main():
     lint_skill_parser.add_argument("directory", help="Path to skill directory containing SKILL.md")
     lint_skill_parser.add_argument("--lenient", action="store_true", help="Use lenient parsing mode")
     lint_skill_parser.set_defaults(func=cmd_lint_skill)
+
+    # lint-quality command
+    lint_quality_parser = subparsers.add_parser("lint-quality", help="Lint a skill directory for quality issues")
+    lint_quality_parser.add_argument("directory", help="Path to skill directory containing SKILL.md")
+    lint_quality_parser.set_defaults(func=cmd_lint_quality)
 
     # sources command
     sources_parser = subparsers.add_parser("sources", help="Manage source repositories")

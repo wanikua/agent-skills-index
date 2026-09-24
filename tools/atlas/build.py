@@ -12,7 +12,7 @@ from typing import Any
 
 import yaml
 
-from tools.atlas import frontmatter
+from tools.atlas import frontmatter, quality
 
 logger = logging.getLogger(__name__)
 
@@ -302,6 +302,14 @@ def build_skill_record(
         # Compute content hash
         content_hash = compute_content_hash(content, fm_result.get("frontmatter"))
 
+        # Run quality linting
+        quality_result = quality.lint_quality(
+            skill_md_path=None,
+            content=content,
+            name=fm_result.get("frontmatter", {}).get("name"),
+            description=fm_result.get("frontmatter", {}).get("description"),
+        )
+
         # Determine trust tier
         trust_tier = determine_trust_tier(source, content_hash, all_content_hashes)
 
@@ -366,7 +374,7 @@ def build_skill_record(
             "signals": {"repo_stars": None},  # TODO: Fetch from GitHub API in S2
             "registry_ids": {},  # S3-7
             "security": {"status": "pending", "risk_level": None, "scans": []},  # S2-4
-            "quality": {"spec_valid": fm_result.get("strict", False), "smells": []},  # S2-6
+            "quality": {"spec_valid": fm_result.get("strict", False), "smells": quality_result.smells},  # S2-6
             "dedup": {
                 "canonical_id": None,
                 "duplicate_of": None,
