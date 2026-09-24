@@ -1,0 +1,92 @@
+name: Daily Refresh
+
+on:
+  schedule:
+    # Run daily at 03:17 UTC (avoid整点)
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+# Only one refresh job should run at a time; do not cancel in-progress runs
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+      
+      - name: Crawl all sources
+        run: |
+          atlas crawl --all
+      
+      - name: Build index
+        run: |
+          atlas build
+      
+      - name: Validate index
+        run: |
+          atlas validate
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          # Check if there are any changes in build/, index/, or state/ directories
+          if git diff --quiet -- build/ index/ state/; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected"
+          fi
+      
+      - name: Commit and push if there are changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Get current date in YYYY-MM-DD format
+          DATE=$(date -u +%Y-%m-%d)
+          
+          # Try to extract change statistics from index/changes.jsonl if it exists
+          if [ -f index/changes.jsonl ]; then
+            # Count entries by type in the last set of changes (simple line count approach)
+            # This is a placeholder - the actual counting logic should match what atlas build produces
+            ADDED=$(grep -c '"type":"added"' index/changes.jsonl 2>/dev/null || echo "0")
+            UPDATED=$(grep -c '"type":"updated"' index/changes.jsonl 2>/dev/null || echo "0")
+            REMOVED=$(grep -c '"type":"removed"' index/changes.jsonl 2>/dev/null || echo "0")
+            
+            # If we have meaningful counts, include them in the commit message
+            if [ "$ADDED" != "0" ] || [ "$UPDATED" != "0" ] || [ "$REMOVED" != "0" ]; then
+              git add build/ index/ state/
+              git commit -m "data: refresh ${DATE} (+${ADDED} ~${UPDATED} -${REMOVED})"
+            else
+              # Fallback to simple message if no changes.jsonl or counts are all zero
+              git add build/ index/ state/
+              git commit -m "data: refresh ${DATE}"
+            fi
+          else
+            # Fallback to simple message if changes.jsonl doesn't exist
+            git add build/ index/ state/
+            git commit -m "data: refresh ${DATE}"
+          fi
+          
+          git push

@@ -64,6 +64,7 @@ To add a new source repository to the index:
 ## Maintenance
 
 The source index is:
+- **Updated daily at 03:17 UTC** via automated refresh workflow
 - Updated regularly with new repository discoveries
 - Verified for link integrity
 - Pruned when repositories become unavailable
