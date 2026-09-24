@@ -56,9 +56,7 @@ class TestDedupPairs:
     def test_minimum_count(self):
         """Must have at least 300 pairs."""
         pairs = load_jsonl(DEDUP_PAIRS_FILE)
-        assert len(pairs) >= MIN_DEDUP_PAIRS, (
-            f"Expected at least {MIN_DEDUP_PAIRS} pairs, got {len(pairs)}"
-        )
+        assert len(pairs) >= MIN_DEDUP_PAIRS, f"Expected at least {MIN_DEDUP_PAIRS} pairs, got {len(pairs)}"
 
     def test_required_fields(self):
         """Each pair must have required fields."""
@@ -179,9 +177,7 @@ class TestSecuritySamples:
         samples = load_jsonl(SECURITY_SAMPLES_FILE)
         for i, sample in enumerate(samples, 1):
             ioc = sample.get("ioc_patterns")
-            assert isinstance(ioc, list), (
-                f"Sample {i}: ioc_patterns must be list, got {type(ioc).__name__}"
-            )
+            assert isinstance(ioc, list), f"Sample {i}: ioc_patterns must be list, got {type(ioc).__name__}"
 
     def test_unique_sample_ids(self):
         """sample_id must be unique."""
@@ -201,17 +197,15 @@ class TestSecuritySamples:
         """Samples should not contain actual executable code (basic heuristic check)."""
         samples = load_jsonl(SECURITY_SAMPLES_FILE)
         suspicious_markers = [
-            b'\x7fELF',  # ELF binary
-            b'MZ\x90',   # DOS/PE binary
-            b'\xcf\xfa\xed\xfe',  # Mach-O binary
+            b"\x7fELF",  # ELF binary
+            b"MZ\x90",  # DOS/PE binary
+            b"\xcf\xfa\xed\xfe",  # Mach-O binary
         ]
 
         for i, sample in enumerate(samples, 1):
             text_bytes = sample["text"].encode("utf-8")
             for marker in suspicious_markers:
-                assert marker not in text_bytes, (
-                    f"Sample {i} contains binary signature {marker.hex()}"
-                )
+                assert marker not in text_bytes, f"Sample {i} contains binary signature {marker.hex()}"
 
     def test_status_distribution(self):
         """Check status distribution (informational)."""
@@ -258,9 +252,7 @@ class TestSecuritySamples:
         for i, sample in enumerate(samples, 1):
             if sample["status"] == "pass":
                 ioc_patterns = sample.get("ioc_patterns", [])
-                assert not ioc_patterns, (
-                    f"Sample {i} has status 'pass' but has IOC patterns: {ioc_patterns}"
-                )
+                assert not ioc_patterns, f"Sample {i} has status 'pass' but has IOC patterns: {ioc_patterns}"
 
 
 class TestCoverage:
