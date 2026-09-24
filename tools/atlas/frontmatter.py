@@ -206,9 +206,7 @@ class FrontmatterParser:
             lines.append(line)
         return "\n".join(lines)
 
-    def _validate(
-        self, raw_data: dict[str, Any], directory_name: str, skill_dir: Path
-    ) -> FrontmatterResult:
+    def _validate(self, raw_data: dict[str, Any], directory_name: str, skill_dir: Path) -> FrontmatterResult:
         """Validate frontmatter data in both strict and lenient modes.
 
         Args:
@@ -308,9 +306,7 @@ class FrontmatterParser:
                                     f"metadata['{key}'] coerced from {type(value).__name__} to string"
                                 )
                             else:
-                                result.errors.append(
-                                    f"metadata['{key}'] must be string, got {type(value).__name__}"
-                                )
+                                result.errors.append(f"metadata['{key}'] must be string, got {type(value).__name__}")
                                 result.lenient_valid = False
 
         # Validate allowed-tools (optional)
@@ -336,9 +332,7 @@ class FrontmatterParser:
                 result.lenient_valid = False
 
         # Build normalized data
-        metadata = (
-            self._normalize_metadata(raw_data.get("metadata")) if self.lenient else raw_data.get("metadata")
-        )
+        metadata = self._normalize_metadata(raw_data.get("metadata")) if self.lenient else raw_data.get("metadata")
         result.normalized = {
             "name": raw_data.get("name"),
             "description": raw_data.get("description"),
@@ -401,9 +395,7 @@ def lint_skill(skill_dir: Path, lenient: bool = False) -> FrontmatterResult:
     if not skill_md.exists():
         skill_md_lower = skill_dir / "skill.md"
         if skill_md_lower.exists():
-            result = FrontmatterParser(lenient=lenient).parse_file(
-                skill_md_lower, directory_name=skill_dir.name
-            )
+            result = FrontmatterParser(lenient=lenient).parse_file(skill_md_lower, directory_name=skill_dir.name)
             result.errors.insert(0, "filename-lowercase")
             result.strict_valid = False
             return result

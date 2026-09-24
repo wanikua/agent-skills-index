@@ -190,9 +190,7 @@ class TestFrontmatterParserDirectParsing:
 
             # Name with 65 characters (exceeds max of 64)
             long_name = "a" * 65
-            skill_md.write_text(
-                f"---\nname: {long_name}\ndescription: Test\nlicense: MIT\n---\n\n# Test\n"
-            )
+            skill_md.write_text(f"---\nname: {long_name}\ndescription: Test\nlicense: MIT\n---\n\n# Test\n")
 
             result = parser.parse_file(skill_md, directory_name="test")
             assert not result.strict_valid
@@ -272,9 +270,7 @@ class TestDialectInference:
             skill_dir.mkdir()
             skill_md = skill_dir / "SKILL.md"
 
-            skill_md.write_text(
-                "---\nname: test\ndescription: Test\nlicense: MIT\nicon: 📄\n---\n\n# Test\n"
-            )
+            skill_md.write_text("---\nname: test\ndescription: Test\nlicense: MIT\nicon: 📄\n---\n\n# Test\n")
 
             result = parser.parse_file(skill_md, directory_name="test")
             assert "cursor" in result.dialects
