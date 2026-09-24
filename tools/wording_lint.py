@@ -72,8 +72,7 @@ def main():
         "docs/architecture.md",
         "curated/README.md",
         "sources/README.md",
-        "router/SKILL.md",
-        "skills/skill-atlas/SKILL.md",  # After S0-2 migration
+        "skills/skill-atlas/SKILL.md",
     ]
 
     # Also recursively check docs/*.md (but exclude docs/research/)

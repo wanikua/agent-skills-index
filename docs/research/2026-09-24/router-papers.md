@@ -134,7 +134,7 @@ Scale check: of about 1.95M skills collected from six marketplaces, 1,046,565 we
 3. **Query interfaces:**
    - **CLI:** `atlas find "<task>" [-k 5] [--layer curated] [--license permissive] [--json]`, plus `atlas show <id>`.
    - **MCP:** `search_skills(query, k=5, filters{layer, min_trust, license, tags, language})` and `get_skill(id, part)`. Keep the tool description modest; avoid "ALWAYS call first".
-   - **Zero-install:** `router/SKILL.md` tells the agent to:
+   - **Zero-install:** `skills/skill-atlas/SKILL.md` tells the agent to:
      - write 3–8 capability keywords plus a one-line imagined skill description ([2609.01642](https://arxiv.org/abs/2609.01642));
      - `grep -iE 'kw1|kw2' index/router-lite/*.jsonl | head -40`;
      - choose at most 3 skills.
@@ -167,5 +167,5 @@ Scale check: of about 1.95M skills collected from six marketplaces, 1,046,565 we
      Also: abstain correctly on ≥70% of no-answer queries; p95 latency under 100 ms (BM25) and under 500 ms (hybrid) on a laptop CPU.
 6. **Risks:**
    - The **"SkillAtlas"** arXiv paper (2609.13353) is a name collision.
-   - The "largest index" claims in AGENTS.md and `router/SKILL.md` are unsupported: the repo index is currently empty, while skills.sh lists over 600K skills.
+   - The "largest index" claims were removed and replaced with goal-oriented language; the router skill now lives at `skills/skill-atlas/SKILL.md` with compliant frontmatter.
    - A default router is a supply-chain chokepoint, so scanning and trust tiers must ship with it.

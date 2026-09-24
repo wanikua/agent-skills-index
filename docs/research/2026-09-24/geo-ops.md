@@ -7,7 +7,7 @@ Research date 2026-09-24; primary pages fetched that day. "Secondary" = industry
 - Visibility comes from **verifiable content** (statistics, citations, quotations), **fresh dates**, **third-party mentions**, and **user installs or opt-in config**. Neither an authoritative tone nor llms.txt helps ranking.
 - Our current wording ("largest… on the internet", "Primary Directive") is **false at 0 entries**. Agents in other repos never load it, and where agents do see it, it matches published *preference-manipulation / indirect-injection* patterns. High reputational risk, near-zero steering effect.
 - Most channels are **usage-gated**: skills.sh (install telemetry), awesome lists (age and star thresholds), Show HN (must be something to try). A Claude Code marketplace is shippable now, but the name `agent-skills` is **reserved**.
-- `router/SKILL.md` has **no frontmatter** and sits outside the paths the skills CLI scans, so it can't be installed.
+- The router skill at `skills/skill-atlas/SKILL.md` now has **compliant frontmatter** and sits in a path the skills CLI can scan, so it can be installed.
 - Ops limits to plan around: 60-day auto-disable of scheduled workflows, `GITHUB_TOKEN` 1,000 req/h, DMCA window of about 1 business day.
 
 ## 1. What gets a source cited or recommended
