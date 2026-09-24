@@ -312,6 +312,22 @@ def build_skill_record(
             description=fm_result.get("frontmatter", {}).get("description"),
         )
 
+        # Run security scan (S2-4)
+        from tools.atlas import security
+
+        description = fm_result.get("frontmatter", {}).get("description")
+        scripts_present = raw_skill.get("has_scripts", False)
+
+        scan_result = security.scan_skill(
+            content=content,
+            description=description,
+            scripts_present=scripts_present,
+            commit_sha=raw_skill["commit_sha"],
+            layer="source",
+        )
+
+        security_field = security.format_security_field(scan_result)
+
         # Determine trust tier
         trust_tier = determine_trust_tier(source, content_hash, all_content_hashes)
 
@@ -341,6 +357,10 @@ def build_skill_record(
                 external_refs_data = external_refs_result["external_refs"]
             except Exception as e:
                 logger.error(f"Failed to check references for {skill_id}: {e}")
+
+        # Update security field with external refs from S2-5
+        if external_refs_data is not None:
+            security_field["external_refs"] = external_refs_data
 
         # Build the record
         record = {
@@ -390,12 +410,7 @@ def build_skill_record(
             "tags": [],  # TODO: Extract from content
             "signals": {"repo_stars": None},  # TODO: Fetch from GitHub API in S2
             "registry_ids": {},  # S3-7
-            "security": {
-                "status": "pending",
-                "risk_level": None,
-                "scans": [],
-                "external_refs": external_refs_data,  # S2-5: External references checked
-            },  # S2-4
+            "security": security_field,  # S2-4 (includes external_refs from S2-5)
             "quality": {"spec_valid": fm_result.get("strict", False), "smells": quality_result.smells},  # S2-6
             "dedup": {
                 "canonical_id": None,
