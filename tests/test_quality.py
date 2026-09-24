@@ -120,8 +120,7 @@ def test_description_has_xml_tags():
     content = skill_path.read_text()
 
     description = (
-        "This description contains <strong>XML tags</strong> "
-        "and <a href='#'>links</a> which should be detected"
+        "This description contains <strong>XML tags</strong> and <a href='#'>links</a> which should be detected"
     )
     result = lint_quality(content=content, description=description, name="description-has-xml-tags")
     assert "description-has-xml-tags" in result.smells
