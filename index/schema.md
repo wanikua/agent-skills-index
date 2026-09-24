@@ -49,22 +49,24 @@ Both use semantic versioning (`schema_version`) to track changes.
 
 ### Example Skill Entry
 
+> **Note:** This is an illustrative example. All values shown are placeholders and do not represent actual skills in the index.
+
 ```json
 {
-  "id": "notion-search",
-  "name": "Notion Search",
-  "description": "Search across Notion workspace using the Notion MCP server.",
-  "author": "Cursor Team",
+  "id": "example-search-skill",
+  "name": "Example Search Skill",
+  "description": "An illustrative example of a skill that performs search operations.",
+  "author": "Example Author",
   "license": "MIT",
   "version": "1.0.0",
   "layer": "curated",
-  "source_repo": "https://github.com/cursor/skills",
-  "source_path": "skills/notion/search/SKILL.md",
+  "source_repo": "https://github.com/example-org/example-skills",
+  "source_path": "skills/example/search/SKILL.md",
   "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "updated_at": "2026-09-24T08:00:00Z",
-  "tags": ["notion", "search", "mcp", "database"],
-  "permissions": ["notion:read"],
-  "curated_path": "curated/notion-search/SKILL.md",
+  "tags": ["search", "example", "illustrative"],
+  "permissions": ["example:read"],
+  "curated_path": "curated/example-search-skill/SKILL.md",
   "language": "en"
 }
 ```
@@ -103,19 +105,21 @@ Both use semantic versioning (`schema_version`) to track changes.
 
 ### Example Repository Entry
 
+> **Note:** This is an illustrative example. All values shown are placeholders and do not represent actual repositories in the index.
+
 ```json
 {
-  "id": "cursor-official-skills",
-  "url": "https://github.com/cursor/agent-skills",
-  "name": "Cursor Official Skills",
-  "description": "Official Agent Skills from the Cursor team",
-  "author": "Cursor",
+  "id": "example-skills-repo",
+  "url": "https://github.com/example-org/example-agent-skills",
+  "name": "Example Skills Repository",
+  "description": "An illustrative example of a repository containing Agent Skills",
+  "author": "Example Organization",
   "license": "MIT",
   "skill_count": 15,
   "skill_pattern": "skills/**/SKILL.md",
   "added_at": "2026-09-01T00:00:00Z",
   "updated_at": "2026-09-24T08:00:00Z",
-  "tags": ["official", "cursor", "verified"],
+  "tags": ["example", "illustrative", "verified"],
   "verified": true
 }
 ```
