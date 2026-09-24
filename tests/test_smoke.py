@@ -49,9 +49,11 @@ def test_crawl_command():
 
 
 def test_build_command():
-    """Test that atlas build runs without error."""
+    """Test that atlas build shows appropriate message when no data."""
     result = subprocess.run([sys.executable, "-m", "tools.atlas", "build"], capture_output=True, text=True, timeout=5)
-    assert result.returncode == 0
+    # Build should exit with 1 when no crawl data is available
+    assert result.returncode == 1
+    assert "No crawl data found" in result.stdout
 
 
 def test_stats_command():

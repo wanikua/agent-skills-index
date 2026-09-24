@@ -112,8 +112,37 @@ def cmd_crawl(args):
 
 def cmd_build(args):
     """Build the index files from crawled data."""
-    print("Build not yet implemented")
-    return 0
+    from pathlib import Path
+
+    from tools.atlas import build
+
+    repo_root = Path.cwd()
+    raw_dir = repo_root / "build" / "raw"
+    sources_file = repo_root / "index" / "sources.json"
+    index_dir = repo_root / "index"
+
+    if not sources_file.exists():
+        print(f"Error: sources.json not found at {sources_file}", file=sys.stderr)
+        return 1
+
+    if not raw_dir.exists() or not list(raw_dir.glob("*.jsonl")):
+        print(f"Warning: No crawl data found in {raw_dir}")
+        print("Run 'atlas crawl --all' first to crawl skills.")
+        return 1
+
+    try:
+        result = build.build_index(raw_dir, sources_file, index_dir, repo_root)
+        print(f"✓ Built {result['skills_built']} skills from {result['sources_used']} sources")
+        print(f"  - Total skills: {result['stats']['total_skills']}")
+        print(f"  - Curated: {result['stats']['curated_skills']}")
+        print(f"  - Repositories: {result['stats']['repositories']}")
+        return 0
+    except Exception as e:
+        print(f"Build failed: {e}", file=sys.stderr)
+        import traceback
+
+        traceback.print_exc()
+        return 1
 
 
 def cmd_stats(args):

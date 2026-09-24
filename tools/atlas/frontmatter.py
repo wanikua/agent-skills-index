@@ -402,3 +402,70 @@ def lint_skill(skill_dir: Path, lenient: bool = False) -> FrontmatterResult:
 
     parser = FrontmatterParser(lenient=lenient)
     return parser.parse_file(skill_md, directory_name=skill_dir.name)
+
+
+def parse_content(content: str, directory_name: str = ".", lenient: bool = True) -> dict[str, Any]:
+    """Parse frontmatter from SKILL.md content string.
+
+    This is a convenience function for build processes that have content in memory.
+
+    Args:
+        content: SKILL.md content as string
+        directory_name: Directory name for name validation
+        lenient: If True, use lenient parsing mode
+
+    Returns:
+        Dict with keys: frontmatter (normalized dict), strict (bool), lenient (bool),
+        errors (list), dialects (list), extensions (dict)
+    """
+    parser = FrontmatterParser(lenient=lenient)
+
+    # Normalize line endings
+    text = content.replace("\r\n", "\n").replace("\r", "\n")
+
+    # Extract frontmatter
+    frontmatter_text, extract_error = parser._extract_frontmatter(text)
+    if extract_error:
+        return {
+            "frontmatter": {},
+            "strict": False,
+            "lenient": False,
+            "errors": [extract_error],
+            "dialects": [],
+            "extensions": {},
+        }
+
+    if not frontmatter_text:
+        return {
+            "frontmatter": {},
+            "strict": False,
+            "lenient": False,
+            "errors": ["Missing frontmatter"],
+            "dialects": [],
+            "extensions": {},
+        }
+
+    # Parse YAML
+    raw_data, parse_errors = parser._parse_yaml(frontmatter_text)
+    if parse_errors:
+        return {
+            "frontmatter": raw_data or {},
+            "strict": False,
+            "lenient": False,
+            "errors": parse_errors,
+            "dialects": [],
+            "extensions": {},
+        }
+
+    # Validate
+    # Note: We don't have a parent path, so we pass None
+    result = parser._validate(raw_data, directory_name, Path("."))
+
+    return {
+        "frontmatter": result.normalized,
+        "strict": result.strict_valid,
+        "lenient": result.lenient_valid,
+        "errors": result.errors,
+        "dialects": result.dialects,
+        "extensions": result.extensions,
+    }
