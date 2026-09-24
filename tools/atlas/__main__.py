@@ -8,6 +8,26 @@ from pathlib import Path
 
 def cmd_validate(args):
     """Validate the index data and schema."""
+    from tools.atlas.schema import validate_index
+
+    exit_code = 0
+
+    # Schema validation
+    if not args.wording:
+        print("Validating index files against schemas...")
+        all_valid, errors_by_file = validate_index()
+
+        if all_valid:
+            print("✓ All index files are valid")
+        else:
+            print("✗ Validation errors found:", file=sys.stderr)
+            for filename, errors in errors_by_file.items():
+                print(f"\n{filename}:", file=sys.stderr)
+                for error in errors:
+                    print(f"  - {error}", file=sys.stderr)
+            exit_code = 1
+
+    # Wording lint
     if args.wording:
         wording_lint_path = Path(__file__).parent.parent.parent / "tools" / "wording_lint.py"
         if wording_lint_path.exists():
@@ -17,12 +37,11 @@ def cmd_validate(args):
             if result.returncode != 0:
                 print(f"Wording lint failed:\n{result.stdout}\n{result.stderr}", file=sys.stderr)
                 return 1
-            print("Wording lint passed")
+            print("✓ Wording lint passed")
         else:
             print("Wording lint not available (tools/wording_lint.py not found), skipping")
 
-    print("Validation not yet implemented")
-    return 0
+    return exit_code
 
 
 def cmd_crawl(args):

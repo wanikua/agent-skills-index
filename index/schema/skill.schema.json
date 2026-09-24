@@ -1,0 +1,336 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wanikua/agent-skills-index/schemas/skill.json",
+  "title": "Agent Skill",
+  "description": "Schema for an Agent Skill record in the Skill Atlas index",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "description",
+    "layer",
+    "source",
+    "hashes",
+    "frontmatter",
+    "conformance",
+    "license",
+    "trust_tier",
+    "status",
+    "first_seen",
+    "last_seen",
+    "last_changed"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Location-based primary key: github.com/<owner>/<repo>/<skill-dir-path>",
+      "pattern": "^github\\.com/[a-z0-9._-]+/[a-z0-9._-]+/.+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Skill name from frontmatter",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "description": {
+      "type": "string",
+      "description": "Skill description from frontmatter",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "layer": {
+      "type": "string",
+      "enum": ["source", "curated"],
+      "description": "Index layer: source (pointer only) or curated (full mirror)"
+    },
+    "source": {
+      "type": "object",
+      "required": ["host", "repo", "path", "ref", "commit", "blob_sha", "url", "source_id"],
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "Source host (e.g., github.com)"
+        },
+        "repo": {
+          "type": "string",
+          "description": "Repository in owner/name format"
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to skill directory within repository"
+        },
+        "ref": {
+          "type": "string",
+          "description": "Git ref (typically branch name)"
+        },
+        "commit": {
+          "type": "string",
+          "description": "40-character commit SHA",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "blob_sha": {
+          "type": "string",
+          "description": "Git blob SHA of SKILL.md",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to skill directory at specific commit"
+        },
+        "source_id": {
+          "type": "string",
+          "description": "ID of the source in sources.json"
+        }
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "required": ["skill_md_sha256", "content_hash", "folder_sha256"],
+      "properties": {
+        "skill_md_sha256": {
+          "type": "string",
+          "description": "SHA-256 of raw SKILL.md bytes",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "content_hash": {
+          "type": "string",
+          "description": "SHA-256 of normalized content with sha256: prefix",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "folder_sha256": {
+          "type": "string",
+          "description": "SHA-256 of entire skill directory",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "frontmatter": {
+      "type": "object",
+      "description": "Parsed frontmatter with standard fields and extensions",
+      "properties": {
+        "license": {
+          "type": ["string", "null"],
+          "description": "License declaration from frontmatter"
+        },
+        "compatibility": {
+          "type": ["string", "null"],
+          "description": "Compatibility constraints"
+        },
+        "allowed_tools": {
+          "type": ["string", "null"],
+          "description": "Allowed tools specification"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Metadata key-value pairs",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "description": "Vendor-specific extension fields"
+        }
+      }
+    },
+    "conformance": {
+      "type": "object",
+      "required": ["strict", "lenient", "errors", "dialects"],
+      "properties": {
+        "strict": {
+          "type": "boolean",
+          "description": "Passes strict spec validation"
+        },
+        "lenient": {
+          "type": "boolean",
+          "description": "Passes lenient spec validation"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of validation errors"
+        },
+        "dialects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Detected spec dialects (e.g., claude-code, cursor)"
+        }
+      }
+    },
+    "license": {
+      "type": "object",
+      "required": ["declared", "spdx", "evidence", "class"],
+      "properties": {
+        "declared": {
+          "type": "string",
+          "description": "Original license declaration text"
+        },
+        "spdx": {
+          "type": "string",
+          "description": "Parsed SPDX expression or special value"
+        },
+        "evidence": {
+          "type": "string",
+          "enum": ["frontmatter", "skill-file", "ancestor-file", "repo-file", "readme", "none"],
+          "description": "Where license information was found"
+        },
+        "file": {
+          "type": ["string", "null"],
+          "description": "Path to license file if applicable"
+        },
+        "class": {
+          "type": "string",
+          "enum": ["allow", "conditional", "deny", "unknown"],
+          "description": "License classification"
+        }
+      }
+    },
+    "declared_version": {
+      "type": ["string", "null"],
+      "description": "Version from metadata.version (not validated, may be null)"
+    },
+    "packaging": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["bare", "claude-plugin", "cursor-plugin", "agent-plugin", "well-known"]
+      },
+      "description": "Detected packaging formats"
+    },
+    "install": {
+      "type": "object",
+      "properties": {
+        "npx": {
+          "type": ["string", "null"],
+          "description": "NPX installation command"
+        },
+        "gh": {
+          "type": ["string", "null"],
+          "description": "GitHub CLI installation command"
+        },
+        "claude_plugin": {
+          "type": ["string", "null"],
+          "description": "Claude plugin installation command"
+        }
+      }
+    },
+    "trust_tier": {
+      "type": "string",
+      "enum": ["official", "community", "aggregator-copy", "unreviewed"],
+      "description": "Trust classification"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags"
+    },
+    "signals": {
+      "type": "object",
+      "properties": {
+        "repo_stars": {
+          "type": ["integer", "null"],
+          "description": "Repository star count"
+        }
+      },
+      "description": "External verifiable signals"
+    },
+    "registry_ids": {
+      "type": "object",
+      "description": "IDs in external registries",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "security": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pass", "review", "warn", "malicious", "pending", "error"],
+          "description": "Security scan status"
+        },
+        "risk_level": {
+          "type": ["string", "null"],
+          "enum": ["low", "medium", "high", null],
+          "description": "Risk assessment level"
+        },
+        "scans": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Scan results"
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "properties": {
+        "spec_valid": {
+          "type": "boolean",
+          "description": "Whether spec validation passed"
+        },
+        "smells": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Detected quality issues"
+        }
+      }
+    },
+    "dedup": {
+      "type": "object",
+      "properties": {
+        "canonical_id": {
+          "type": ["string", "null"],
+          "description": "ID of canonical record if this is non-canonical"
+        },
+        "duplicate_of": {
+          "type": ["string", "null"],
+          "description": "ID of exact duplicate"
+        },
+        "near_duplicate_of": {
+          "type": ["string", "null"],
+          "description": "ID of near duplicate"
+        },
+        "cluster": {
+          "type": ["string", "null"],
+          "description": "Deduplication cluster ID"
+        }
+      }
+    },
+    "curated_path": {
+      "type": ["string", "null"],
+      "description": "Path in curated/ directory if applicable"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "removed", "quarantined", "dangling"],
+      "description": "Current status"
+    },
+    "first_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of first observation"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of last observation"
+    },
+    "last_changed": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of last content change"
+    }
+  }
+}

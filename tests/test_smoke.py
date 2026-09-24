@@ -37,7 +37,7 @@ def test_validate_command():
         [sys.executable, "-m", "tools.atlas", "validate"], capture_output=True, text=True, timeout=5
     )
     assert result.returncode == 0
-    assert "not yet implemented" in result.stdout.lower() or "not yet implemented" in result.stderr.lower()
+    assert "validating" in result.stdout.lower() or "valid" in result.stdout.lower()
 
 
 def test_crawl_command():
