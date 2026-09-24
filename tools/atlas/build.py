@@ -400,8 +400,10 @@ def compute_stats(skills: list[dict[str, Any]], sources_count: int, now: datetim
     Returns:
         Stats dict
     """
+    from tools.atlas.dedup import compute_canonical_count
+
     total_skills = len(skills)
-    canonical_skills = total_skills  # S2 will implement dedup
+    canonical_skills = compute_canonical_count(skills)
     curated_skills = sum(1 for s in skills if s.get("layer") == "curated")
 
     by_license_class = defaultdict(int)
@@ -603,6 +605,12 @@ def build_index(
             skills.append(record)
 
     logger.info(f"Built {len(skills)} skill records")
+
+    # Apply deduplication
+    logger.info("Applying exact deduplication...")
+    from tools.atlas.dedup import apply_deduplication
+
+    skills = apply_deduplication(skills)
 
     # Build skills by ID dict
     new_skills_by_id = {s["id"]: s for s in skills}

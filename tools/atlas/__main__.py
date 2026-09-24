@@ -211,6 +211,73 @@ def cmd_discover(args):
     return run_discover(output_path)
 
 
+def cmd_dedup(args):
+    """Run deduplication analysis on the index."""
+    import json
+    from pathlib import Path
+
+    from tools.atlas.dedup import apply_deduplication, cluster_by_content_hash, compute_canonical_count
+
+    repo_root = Path.cwd()
+    index_file = repo_root / "index" / "skills.jsonl"
+
+    if not index_file.exists():
+        print(f"Error: {index_file} not found", file=sys.stderr)
+        print("Run 'atlas build' first to generate the index", file=sys.stderr)
+        return 1
+
+    # Load skills
+    skills = []
+    with open(index_file, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                skills.append(json.loads(line))
+
+    print(f"Loaded {len(skills)} skills from index")
+
+    # Cluster by content hash
+    clusters = cluster_by_content_hash(skills)
+
+    # Find duplicate clusters
+    duplicate_clusters = {h: c for h, c in clusters.items() if len(c) > 1}
+
+    print(f"\nFound {len(clusters)} unique content hashes")
+    print(f"Found {len(duplicate_clusters)} duplicate clusters")
+
+    if args.report and duplicate_clusters:
+        print("\nDuplicate clusters:")
+        for content_hash, cluster in sorted(duplicate_clusters.items(), key=lambda x: len(x[1]), reverse=True):
+            print(f"\n  Hash: {content_hash[:16]}... ({len(cluster)} skills)")
+            for skill in cluster:
+                trust = skill.get("trust_tier", "unknown")
+                first_seen = skill.get("first_seen", "unknown")[:10]  # Just the date
+                print(f"    - {skill['id']}")
+                print(f"      trust_tier: {trust}, first_seen: {first_seen}")
+
+    # Apply deduplication
+    if not args.dry_run:
+        print("\nApplying deduplication...")
+        skills = apply_deduplication(skills)
+
+        # Rewrite index
+        print("Writing updated index...")
+        with open(index_file, "w", encoding="utf-8") as f:
+            for skill in sorted(skills, key=lambda s: s["id"]):
+                f.write(json.dumps(skill, ensure_ascii=False, sort_keys=True))
+                f.write("\n")
+
+        canonical_count = compute_canonical_count(skills)
+        print("✓ Deduplication complete")
+        print(f"  Total skills: {len(skills)}")
+        print(f"  Canonical skills: {canonical_count}")
+        print(f"  Duplicate skills: {len(skills) - canonical_count}")
+    else:
+        print("\nDry run - no changes made")
+
+    return 0
+
+
 def main():
     """Main entry point for the atlas CLI."""
     parser = argparse.ArgumentParser(prog="atlas", description="Skill Atlas CLI - Manage the agent skills index")
@@ -268,6 +335,12 @@ def main():
         "-o", "--output", help="Output path for candidates.jsonl (default: build/candidates.jsonl)"
     )
     discover_parser.set_defaults(func=cmd_discover)
+
+    # dedup command
+    dedup_parser = subparsers.add_parser("dedup", help="Analyze and apply deduplication to the index")
+    dedup_parser.add_argument("--report", action="store_true", help="Show detailed duplicate cluster report")
+    dedup_parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
+    dedup_parser.set_defaults(func=cmd_dedup)
 
     args = parser.parse_args()
 
