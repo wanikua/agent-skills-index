@@ -1,0 +1,68 @@
+{
+  "id": "github.com/example-org/example-repo/skills/valid-skill",
+  "name": "valid-skill",
+  "description": "A valid tier 1 skill with allow license for testing curation",
+  "layer": "source",
+  "source": {
+    "host": "github.com",
+    "repo": "example-org/example-repo",
+    "path": "skills/valid-skill",
+    "ref": "main",
+    "commit": "abc123def456abc123def456abc123def456abc1",
+    "blob_sha": "blob123",
+    "url": "https://github.com/example-org/example-repo/tree/abc123/skills/valid-skill",
+    "source_id": "example-official"
+  },
+  "hashes": {
+    "skill_md_sha256": "test_hash_123",
+    "content_hash": "sha256:test_content_hash_123",
+    "folder_sha256": "test_folder_hash_123"
+  },
+  "frontmatter": {
+    "license": "MIT",
+    "compatibility": null,
+    "allowed_tools": null,
+    "metadata": {},
+    "extensions": {}
+  },
+  "conformance": {
+    "strict": true,
+    "lenient": true,
+    "errors": [],
+    "dialects": ["claude-code"]
+  },
+  "license": {
+    "declared": "MIT",
+    "spdx": "MIT",
+    "evidence": "frontmatter",
+    "file": "LICENSE",
+    "class": "allow"
+  },
+  "declared_version": null,
+  "packaging": ["bare"],
+  "install": {},
+  "trust_tier": "official",
+  "tags": ["example", "test"],
+  "signals": {},
+  "registry_ids": {},
+  "security": {
+    "status": "pass",
+    "risk_level": "low",
+    "scans": []
+  },
+  "quality": {
+    "spec_valid": true,
+    "smells": []
+  },
+  "dedup": {
+    "canonical_id": null,
+    "duplicate_of": null,
+    "near_duplicate_of": null,
+    "cluster": null
+  },
+  "curated_path": null,
+  "status": "active",
+  "first_seen": "2026-09-01T00:00:00Z",
+  "last_seen": "2026-09-24T00:00:00Z",
+  "last_changed": "2026-09-24T00:00:00Z"
+}

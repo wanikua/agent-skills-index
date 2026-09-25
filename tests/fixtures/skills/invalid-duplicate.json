@@ -1,0 +1,68 @@
+{
+  "id": "github.com/copy-org/copy-repo/skills/duplicate-skill",
+  "name": "duplicate-skill",
+  "description": "A skill that is a duplicate of another skill",
+  "layer": "source",
+  "source": {
+    "host": "github.com",
+    "repo": "copy-org/copy-repo",
+    "path": "skills/duplicate-skill",
+    "ref": "main",
+    "commit": "def456abc123def456abc123def456abc123def4",
+    "blob_sha": "blob999",
+    "url": "https://github.com/copy-org/copy-repo/tree/def456/skills/duplicate-skill",
+    "source_id": "copy-aggregator"
+  },
+  "hashes": {
+    "skill_md_sha256": "test_hash_999",
+    "content_hash": "sha256:test_content_hash_999",
+    "folder_sha256": "test_folder_hash_999"
+  },
+  "frontmatter": {
+    "license": "MIT",
+    "compatibility": null,
+    "allowed_tools": null,
+    "metadata": {},
+    "extensions": {}
+  },
+  "conformance": {
+    "strict": true,
+    "lenient": true,
+    "errors": [],
+    "dialects": ["claude-code"]
+  },
+  "license": {
+    "declared": "MIT",
+    "spdx": "MIT",
+    "evidence": "frontmatter",
+    "file": "LICENSE",
+    "class": "allow"
+  },
+  "declared_version": null,
+  "packaging": ["bare"],
+  "install": {},
+  "trust_tier": "aggregator-copy",
+  "tags": ["example", "test"],
+  "signals": {},
+  "registry_ids": {},
+  "security": {
+    "status": "pass",
+    "risk_level": "low",
+    "scans": []
+  },
+  "quality": {
+    "spec_valid": true,
+    "smells": []
+  },
+  "dedup": {
+    "canonical_id": "github.com/example-org/example-repo/skills/valid-skill",
+    "duplicate_of": "github.com/example-org/example-repo/skills/valid-skill",
+    "near_duplicate_of": null,
+    "cluster": "cluster-1"
+  },
+  "curated_path": null,
+  "status": "active",
+  "first_seen": "2026-09-01T00:00:00Z",
+  "last_seen": "2026-09-24T00:00:00Z",
+  "last_changed": "2026-09-24T00:00:00Z"
+}
