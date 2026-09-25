@@ -797,13 +797,13 @@ def build_index(
     # Generate router-lite shards
     logger.info("Generating router-lite shards...")
     from tools.atlas.router_lite import generate_router_lite
-    
+
     router_lite_dir = index_dir / "router-lite"
     router_lite_result = generate_router_lite(skills, router_lite_dir)
-    
+
     if not router_lite_result.get("success"):
         logger.warning(f"Router-lite generation failed: {router_lite_result.get('error', 'Unknown error')}")
-    
+
     return {
         "success": True,
         "skills_built": len(skills),
