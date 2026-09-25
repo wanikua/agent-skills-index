@@ -57,8 +57,10 @@ def test_build_command():
 
 
 def test_stats_command():
-    """Test that atlas stats runs without error."""
-    result = subprocess.run([sys.executable, "-m", "tools.atlas", "stats"], capture_output=True, text=True, timeout=5)
+    """Test that atlas stats --readme runs without error."""
+    result = subprocess.run(
+        [sys.executable, "-m", "tools.atlas", "stats", "--readme"], capture_output=True, text=True, timeout=5
+    )
     assert result.returncode == 0
 
 

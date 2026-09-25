@@ -5,7 +5,12 @@
 **Goal:** the most complete, most up-to-date, license-aware open index.
 
 <!-- atlas:stats:start -->
-Early preview: the index is being seeded.
+*Early preview: the index is being seeded.*
+
+- **Total skills indexed:** [0](index/skills.jsonl)
+- **Source repositories:** [0](index/sources.json)
+- **Curated skills:** [0](curated/)
+- **Last updated:** 2026-09-24
 <!-- atlas:stats:end -->
 
 ## For AI Agents
