@@ -711,6 +711,165 @@ def cmd_check_refs(args):
     return 0 if skills_with_dangling == 0 else 1
 
 
+def cmd_index(args):
+    """Build the router SQLite database from skills.jsonl (S3-2)."""
+    from pathlib import Path
+
+    from tools.atlas import router
+
+    repo_root = Path.cwd()
+    skills_file = repo_root / "index" / "skills.jsonl"
+    output_dir = repo_root / "build"
+    output_db = output_dir / "router.sqlite"
+
+    if not skills_file.exists():
+        print(f"Error: {skills_file} not found", file=sys.stderr)
+        print("Run 'atlas build' first to generate the index", file=sys.stderr)
+        return 1
+
+    # Ensure output directory exists
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Build router database
+    print(f"Building router database from {skills_file}...")
+    count = router.build_router_db(skills_file, output_db)
+
+    print(f"✓ Router database built: {output_db}")
+    print(f"  Indexed {count} skills")
+
+    return 0
+
+
+def cmd_find(args):
+    """Search for skills using the router (S3-2)."""
+    import json
+    from pathlib import Path
+
+    from tools.atlas import router
+
+    repo_root = Path.cwd()
+    db_path = repo_root / "build" / "router.sqlite"
+
+    if not db_path.exists():
+        print(f"Error: {db_path} not found", file=sys.stderr)
+        print("Run 'atlas index' first to build the router database", file=sys.stderr)
+        return 1
+
+    # Map license filter
+    license_filter = None
+    if args.license == "permissive":
+        license_filter = "permissive"
+
+    # Search
+    result = router.search_skills(
+        db_path=db_path,
+        query=args.query,
+        k=args.k,
+        layer=args.layer,
+        license_filter=license_filter,
+        min_trust=args.min_trust,
+    )
+
+    # Output
+    if args.json:
+        output = {
+            "query": result.query,
+            "abstained": result.abstained,
+            "results": [
+                {
+                    "id": m.id,
+                    "name": m.name,
+                    "description": m.description,
+                    "install": m.install,
+                    "url": m.url,
+                    "content_hash": m.content_hash,
+                    "trust_tier": m.trust_tier,
+                    "license": m.license,
+                    "security": m.security,
+                    "alternatives_count": m.alternatives_count,
+                    "why_matched": m.why_matched,
+                    "score": m.score,
+                }
+                for m in result.results
+            ],
+            "note": result.note,
+        }
+        print(json.dumps(output, indent=2, ensure_ascii=False))
+    else:
+        # Human-readable output
+        print(f"Query: {result.query}")
+        if result.abstained:
+            print("⚠️  Low confidence - abstained")
+        print(f"Found {len(result.results)} skill(s):\n")
+
+        for i, match in enumerate(result.results, 1):
+            print(f"{i}. {match.name}")
+            print(f"   {match.description[:100]}...")
+            print(f"   ID: {match.id}")
+            print(f"   Trust: {match.trust_tier} | License: {match.license} | Security: {match.security}")
+            print(f"   URL: {match.url}")
+            print(f"   Score: {match.score}")
+            if match.alternatives_count > 0:
+                print(f"   Alternatives: {match.alternatives_count}")
+            print()
+
+        if result.results:
+            print(result.note)
+
+    return 0
+
+
+def cmd_show(args):
+    """Show details for a specific skill by ID (S3-2)."""
+    import json
+    from pathlib import Path
+
+    from tools.atlas import router
+
+    repo_root = Path.cwd()
+    db_path = repo_root / "build" / "router.sqlite"
+
+    if not db_path.exists():
+        print(f"Error: {db_path} not found", file=sys.stderr)
+        print("Run 'atlas index' first to build the router database", file=sys.stderr)
+        return 1
+
+    # Get skill
+    skill = router.get_skill_by_id(db_path, args.id)
+
+    if not skill:
+        print(f"Error: Skill '{args.id}' not found", file=sys.stderr)
+        return 1
+
+    # Output
+    if args.json:
+        print(json.dumps(skill, indent=2, ensure_ascii=False))
+    else:
+        print(f"Skill: {skill['name']}")
+        print(f"ID: {skill['id']}")
+        print(f"Description: {skill['description']}")
+        print(f"\nLayer: {skill['layer']}")
+        print(f"Trust: {skill['trust_tier']}")
+        print(f"License: {skill['license']}")
+        print(f"Security: {skill['security']}")
+        print(f"\nURL: {skill['url']}")
+        print(f"Content Hash: {skill['content_hash']}")
+        if skill["alternatives_count"] > 0:
+            print(f"Alternatives: {skill['alternatives_count']}")
+        if skill.get("canonical_id"):
+            print(f"Canonical ID: {skill['canonical_id']}")
+
+        print("\nInstall:")
+        if skill["install"]["npx"]:
+            print(f"  npx: {skill['install']['npx']}")
+        if skill["install"]["gh"]:
+            print(f"  gh: {skill['install']['gh']}")
+        if skill["install"]["claude_plugin"]:
+            print(f"  plugin: {skill['install']['claude_plugin']}")
+
+    return 0
+
+
 def main():
     """Main entry point for the atlas CLI."""
     parser = argparse.ArgumentParser(prog="atlas", description="Skill Atlas CLI - Manage the agent skills index")
@@ -818,6 +977,32 @@ def main():
     )
     check_refs_parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
     check_refs_parser.set_defaults(func=cmd_check_refs)
+
+    # index command (S3-2)
+    index_parser = subparsers.add_parser("index", help="Build router SQLite database from skills.jsonl (S3-2)")
+    index_parser.set_defaults(func=cmd_index)
+
+    # find command (S3-2)
+    find_parser = subparsers.add_parser("find", help="Search for skills using FTS5 router (S3-2)")
+    find_parser.add_argument("query", help="Search query string")
+    find_parser.add_argument("-k", type=int, default=5, help="Number of results to return (default: 5)")
+    find_parser.add_argument("--layer", choices=["curated", "source"], help="Filter by layer")
+    find_parser.add_argument(
+        "--license", choices=["permissive"], help="Filter by license (permissive = allow-list licenses)"
+    )
+    find_parser.add_argument(
+        "--min-trust",
+        choices=["official", "community", "unreviewed"],
+        help="Minimum trust tier",
+    )
+    find_parser.add_argument("--json", action="store_true", help="Output as JSON")
+    find_parser.set_defaults(func=cmd_find)
+
+    # show command (S3-2)
+    show_parser = subparsers.add_parser("show", help="Show details for a specific skill by ID (S3-2)")
+    show_parser.add_argument("id", help="Skill ID to show")
+    show_parser.add_argument("--json", action="store_true", help="Output as JSON")
+    show_parser.set_defaults(func=cmd_show)
 
     args = parser.parse_args()
 

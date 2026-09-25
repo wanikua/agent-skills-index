@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wanikua/agent-skills-index/blob/main/index/schema/router-result.schema.json",
+  "title": "Router Result",
+  "description": "Schema for atlas find command output (--json)",
+  "type": "object",
+  "required": ["query", "abstained", "results"],
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "The search query string"
+    },
+    "abstained": {
+      "type": "boolean",
+      "description": "True if the router refused to answer due to low confidence scores"
+    },
+    "results": {
+      "type": "array",
+      "description": "Ranked list of matching skills",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "url"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Skill identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Skill name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Skill description"
+          },
+          "install": {
+            "type": "object",
+            "description": "Installation commands",
+            "properties": {
+              "npx": {
+                "type": ["string", "null"]
+              },
+              "gh": {
+                "type": ["string", "null"]
+              },
+              "claude_plugin": {
+                "type": ["string", "null"]
+              }
+            }
+          },
+          "url": {
+            "type": "string",
+            "description": "Source URL"
+          },
+          "content_hash": {
+            "type": "string",
+            "description": "Content hash for verification"
+          },
+          "trust_tier": {
+            "type": "string",
+            "enum": ["official", "community", "aggregator-copy", "unreviewed"]
+          },
+          "license": {
+            "type": "string",
+            "description": "License SPDX expression"
+          },
+          "security": {
+            "type": "string",
+            "description": "Security status"
+          },
+          "alternatives_count": {
+            "type": "integer",
+            "description": "Number of alternative implementations with the same content_hash",
+            "minimum": 0
+          },
+          "why_matched": {
+            "type": "object",
+            "description": "Explanation of why this skill matched",
+            "properties": {
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["name", "desc", "kw_tags", "body_head"]
+                }
+              },
+              "terms": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "bm25_rank": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          "score": {
+            "type": "number",
+            "description": "Final ranking score"
+          }
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "description": "Advisory note about trust and security"
+    }
+  }
+}
