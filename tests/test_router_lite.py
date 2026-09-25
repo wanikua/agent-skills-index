@@ -455,19 +455,21 @@ def test_generate_router_lite_size_limits():
     # Create curated skills
     curated_skills = []
     for i in range(50):
-        curated_skills.append({
-            "id": f"github.com/test/repo/curated{i}",
-            "name": f"curated{i}",
-            "description": f"Curated skill {i} with a reasonably long description to test size limits",
-            "status": "active",
-            "trust_tier": "curated",
-            "license": {"class": "allow", "spdx": "MIT"},
-            "security": {"status": "pass"},
-            "dedup": {},
-            "install": {"npx": f"npx skills add curated{i}"},
-            "source": {"url": f"https://github.com/test/repo{i}"},
-            "hashes": {"content_hash": f"sha256:hash{i}"},
-        })
+        curated_skills.append(
+            {
+                "id": f"github.com/test/repo/curated{i}",
+                "name": f"curated{i}",
+                "description": f"Curated skill {i} with a reasonably long description to test size limits",
+                "status": "active",
+                "trust_tier": "curated",
+                "license": {"class": "allow", "spdx": "MIT"},
+                "security": {"status": "pass"},
+                "dedup": {},
+                "install": {"npx": f"npx skills add curated{i}"},
+                "source": {"url": f"https://github.com/test/repo{i}"},
+                "hashes": {"content_hash": f"sha256:hash{i}"},
+            }
+        )
 
     with tempfile.TemporaryDirectory() as tmpdir:
         output_dir = Path(tmpdir) / "router-lite"
@@ -550,19 +552,21 @@ def test_generate_router_lite_community_sharding():
     # Create many community skills to trigger sharding
     community_skills = []
     for i in range(100):
-        community_skills.append({
-            "id": f"github.com/test/repo{i}/skill",
-            "name": f"community-skill-{i}",
-            "description": f"Community skill {i} " + ("X" * 200),  # Make descriptions longer
-            "status": "active",
-            "trust_tier": "community",
-            "license": {"class": "allow", "spdx": "MIT"},
-            "security": {"status": "pass"},
-            "dedup": {},
-            "install": {"npx": f"npx skills add community-skill-{i}"},
-            "source": {"url": f"https://github.com/test/repo{i}"},
-            "hashes": {"content_hash": f"sha256:hash{i}{'a' * 60}"},
-        })
+        community_skills.append(
+            {
+                "id": f"github.com/test/repo{i}/skill",
+                "name": f"community-skill-{i}",
+                "description": f"Community skill {i} " + ("X" * 200),  # Make descriptions longer
+                "status": "active",
+                "trust_tier": "community",
+                "license": {"class": "allow", "spdx": "MIT"},
+                "security": {"status": "pass"},
+                "dedup": {},
+                "install": {"npx": f"npx skills add community-skill-{i}"},
+                "source": {"url": f"https://github.com/test/repo{i}"},
+                "hashes": {"content_hash": f"sha256:hash{i}{'a' * 60}"},
+            }
+        )
 
     with tempfile.TemporaryDirectory() as tmpdir:
         output_dir = Path(tmpdir) / "router-lite"
@@ -590,19 +594,21 @@ def test_generate_router_lite_mixed_tiers():
     # Add 5 of each tier
     for tier in ["curated", "official", "community", "unreviewed", "aggregator-copy"]:
         for i in range(5):
-            skills.append({
-                "id": f"github.com/test/{tier}/skill{i}",
-                "name": f"{tier}-{i}",
-                "description": f"Test {tier} skill {i}",
-                "status": "active",
-                "trust_tier": tier,
-                "license": {"class": "allow", "spdx": "MIT"},
-                "security": {"status": "pass"},
-                "dedup": {},
-                "install": {},
-                "source": {"url": ""},
-                "hashes": {"content_hash": f"sha256:{tier}{i}"},
-            })
+            skills.append(
+                {
+                    "id": f"github.com/test/{tier}/skill{i}",
+                    "name": f"{tier}-{i}",
+                    "description": f"Test {tier} skill {i}",
+                    "status": "active",
+                    "trust_tier": tier,
+                    "license": {"class": "allow", "spdx": "MIT"},
+                    "security": {"status": "pass"},
+                    "dedup": {},
+                    "install": {},
+                    "source": {"url": ""},
+                    "hashes": {"content_hash": f"sha256:{tier}{i}"},
+                }
+            )
 
     with tempfile.TemporaryDirectory() as tmpdir:
         output_dir = Path(tmpdir) / "router-lite"

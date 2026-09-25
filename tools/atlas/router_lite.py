@@ -23,20 +23,132 @@ MAX_KEYWORD_LENGTH = 30
 
 # High-frequency boilerplate terms to filter out (English stopwords + domain-specific)
 STOPWORDS = {
-    "the", "be", "to", "of", "and", "a", "in", "that", "have", "i", "it", "for",
-    "not", "on", "with", "he", "as", "you", "do", "at", "this", "but", "his",
-    "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my",
-    "one", "all", "would", "there", "their", "what", "so", "up", "out", "if",
-    "about", "who", "get", "which", "go", "me", "when", "make", "can", "like",
-    "time", "no", "just", "him", "know", "take", "people", "into", "year", "your",
-    "good", "some", "could", "them", "see", "other", "than", "then", "now", "look",
-    "only", "come", "its", "over", "think", "also", "back", "after", "use", "two",
-    "how", "our", "work", "first", "well", "way", "even", "new", "want", "because",
-    "any", "these", "give", "day", "most", "us",
+    "the",
+    "be",
+    "to",
+    "of",
+    "and",
+    "a",
+    "in",
+    "that",
+    "have",
+    "i",
+    "it",
+    "for",
+    "not",
+    "on",
+    "with",
+    "he",
+    "as",
+    "you",
+    "do",
+    "at",
+    "this",
+    "but",
+    "his",
+    "by",
+    "from",
+    "they",
+    "we",
+    "say",
+    "her",
+    "she",
+    "or",
+    "an",
+    "will",
+    "my",
+    "one",
+    "all",
+    "would",
+    "there",
+    "their",
+    "what",
+    "so",
+    "up",
+    "out",
+    "if",
+    "about",
+    "who",
+    "get",
+    "which",
+    "go",
+    "me",
+    "when",
+    "make",
+    "can",
+    "like",
+    "time",
+    "no",
+    "just",
+    "him",
+    "know",
+    "take",
+    "people",
+    "into",
+    "year",
+    "your",
+    "good",
+    "some",
+    "could",
+    "them",
+    "see",
+    "other",
+    "than",
+    "then",
+    "now",
+    "look",
+    "only",
+    "come",
+    "its",
+    "over",
+    "think",
+    "also",
+    "back",
+    "after",
+    "use",
+    "two",
+    "how",
+    "our",
+    "work",
+    "first",
+    "well",
+    "way",
+    "even",
+    "new",
+    "want",
+    "because",
+    "any",
+    "these",
+    "give",
+    "day",
+    "most",
+    "us",
     # Domain-specific boilerplate
-    "skill", "agent", "claude", "cursor", "plugin", "use", "when", "how", "can",
-    "will", "using", "used", "uses", "allows", "provides", "enables", "helps",
-    "make", "makes", "create", "creates", "get", "gets", "set", "sets",
+    "skill",
+    "agent",
+    "claude",
+    "cursor",
+    "plugin",
+    "use",
+    "when",
+    "how",
+    "can",
+    "will",
+    "using",
+    "used",
+    "uses",
+    "allows",
+    "provides",
+    "enables",
+    "helps",
+    "make",
+    "makes",
+    "create",
+    "creates",
+    "get",
+    "gets",
+    "set",
+    "sets",
 }
 
 
@@ -85,18 +197,14 @@ def extract_keywords(
 
     # Tokenize (simple word extraction)
     # Remove markdown formatting and special characters
-    full_text = re.sub(r'[#*`_\[\]()]', ' ', full_text)
-    full_text = re.sub(r'https?://\S+', ' ', full_text)  # Remove URLs
+    full_text = re.sub(r"[#*`_\[\]()]", " ", full_text)
+    full_text = re.sub(r"https?://\S+", " ", full_text)  # Remove URLs
 
     # Extract words
-    words = re.findall(r'\b[a-z0-9]+(?:-[a-z0-9]+)*\b', full_text)
+    words = re.findall(r"\b[a-z0-9]+(?:-[a-z0-9]+)*\b", full_text)
 
     # Filter by length and stopwords
-    words = [
-        w for w in words
-        if MIN_KEYWORD_LENGTH <= len(w) <= MAX_KEYWORD_LENGTH
-        and w not in STOPWORDS
-    ]
+    words = [w for w in words if MIN_KEYWORD_LENGTH <= len(w) <= MAX_KEYWORD_LENGTH and w not in STOPWORDS]
 
     if not words:
         return []
@@ -146,15 +254,11 @@ def compute_idf_scores(skills: list[dict[str, Any]]) -> dict[str, float]:
             text_parts.append(skill["description"].lower())
 
         full_text = " ".join(text_parts)
-        full_text = re.sub(r'[#*`_\[\]()]', ' ', full_text)
-        full_text = re.sub(r'https?://\S+', ' ', full_text)
+        full_text = re.sub(r"[#*`_\[\]()]", " ", full_text)
+        full_text = re.sub(r"https?://\S+", " ", full_text)
 
-        words = set(re.findall(r'\b[a-z0-9]+(?:-[a-z0-9]+)*\b', full_text))
-        words = {
-            w for w in words
-            if MIN_KEYWORD_LENGTH <= len(w) <= MAX_KEYWORD_LENGTH
-            and w not in STOPWORDS
-        }
+        words = set(re.findall(r"\b[a-z0-9]+(?:-[a-z0-9]+)*\b", full_text))
+        words = {w for w in words if MIN_KEYWORD_LENGTH <= len(w) <= MAX_KEYWORD_LENGTH and w not in STOPWORDS}
 
         for word in words:
             doc_freq[word] += 1
@@ -224,7 +328,7 @@ def extract_body_info(
         for line in lines:
             if line.startswith("#"):
                 # Extract title text
-                title = re.sub(r'^#+\s*', '', line).strip()
+                title = re.sub(r"^#+\s*", "", line).strip()
                 if title:
                     titles.append(title)
 
@@ -372,20 +476,17 @@ def generate_router_lite(
 
     # Split into groups: curated, official, community
     curated_records = [r for r in router_lite_records if r["tier"] == "curated"]
-    official_records = [
-        r for r in router_lite_records
-        if r["tier"] == "official" and r not in curated_records
-    ]
+    official_records = [r for r in router_lite_records if r["tier"] == "official" and r not in curated_records]
     community_records = [
-        r for r in router_lite_records
+        r
+        for r in router_lite_records
         if r["tier"] in ["community", "unreviewed", "aggregator-copy"]
         and r not in curated_records
         and r not in official_records
     ]
 
     logger.info(
-        f"  Split: {len(curated_records)} curated, {len(official_records)} official, "
-        f"{len(community_records)} community"
+        f"  Split: {len(curated_records)} curated, {len(official_records)} official, {len(community_records)} community"
     )
 
     # Create output directory
@@ -420,11 +521,13 @@ def generate_router_lite(
                 # Write current shard
                 shard_file = output_dir / f"community-{shard_num:02d}.jsonl"
                 size = _write_shard(current_shard, shard_file, MAX_COMMUNITY_SHARD_SIZE, f"community-{shard_num:02d}")
-                files_created.append({
-                    "file": f"community-{shard_num:02d}.jsonl",
-                    "records": len(current_shard),
-                    "size": size,
-                })
+                files_created.append(
+                    {
+                        "file": f"community-{shard_num:02d}.jsonl",
+                        "records": len(current_shard),
+                        "size": size,
+                    }
+                )
 
                 # Start new shard
                 shard_num += 1
@@ -438,11 +541,13 @@ def generate_router_lite(
         if current_shard:
             shard_file = output_dir / f"community-{shard_num:02d}.jsonl"
             size = _write_shard(current_shard, shard_file, MAX_COMMUNITY_SHARD_SIZE, f"community-{shard_num:02d}")
-            files_created.append({
-                "file": f"community-{shard_num:02d}.jsonl",
-                "records": len(current_shard),
-                "size": size,
-            })
+            files_created.append(
+                {
+                    "file": f"community-{shard_num:02d}.jsonl",
+                    "records": len(current_shard),
+                    "size": size,
+                }
+            )
 
     logger.info(f"✓ Generated {len(files_created)} router-lite shards")
 
@@ -484,9 +589,7 @@ def _write_shard(
     actual_size = output_file.stat().st_size
 
     if actual_size > max_size:
-        logger.warning(
-            f"⚠️  {shard_name} shard size {actual_size:,} bytes exceeds limit {max_size:,} bytes"
-        )
+        logger.warning(f"⚠️  {shard_name} shard size {actual_size:,} bytes exceeds limit {max_size:,} bytes")
 
     logger.info(f"  Wrote {output_file.name}: {len(records)} records, {actual_size:,} bytes")
 
