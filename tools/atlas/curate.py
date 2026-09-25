@@ -1,5 +1,6 @@
 """Curate skills into the curated/ directory."""
 
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -71,6 +72,13 @@ def is_valid_for_curation(skill_record: dict[str, Any]) -> tuple[bool, list[str]
     if dedup_info.get("duplicate_of"):
         reasons.append(f"is a duplicate of {dedup_info['duplicate_of']}")
 
+    # Check security status if present (fail closed for curated)
+    security = skill_record.get("security", {})
+    if security:  # If security field exists
+        status = security.get("status")
+        if status != "pass":
+            reasons.append(f"security.status is '{status}', not 'pass'")
+
     return (len(reasons) == 0, reasons)
 
 
@@ -80,6 +88,7 @@ def validate_skill_directory(skill_dir: Path) -> tuple[bool, list[str]]:
 
     Checks:
     - Only text files with whitelist extensions
+    - No symlinks (red line: never follow symlinks)
     - Each file ≤ 1MB
     - SKILL.md ≤ 5000 words
 
@@ -91,9 +100,18 @@ def validate_skill_directory(skill_dir: Path) -> tuple[bool, list[str]]:
     if not skill_dir.exists():
         return (False, ["directory does not exist"])
 
+    # P1: Check if skill_dir itself is a symlink
+    if skill_dir.is_symlink():
+        return (False, ["skill directory is a symlink (not allowed)"])
+
     skill_md = skill_dir / "SKILL.md"
     if not skill_md.exists():
         return (False, ["SKILL.md not found"])
+
+    # P1: Check if SKILL.md is a symlink
+    if skill_md.is_symlink():
+        violations.append("SKILL.md is a symlink (not allowed)")
+        return (False, violations)
 
     # Check SKILL.md word count
     skill_content = skill_md.read_text(encoding="utf-8")
@@ -103,6 +121,11 @@ def validate_skill_directory(skill_dir: Path) -> tuple[bool, list[str]]:
 
     # Check all files in directory
     for file_path in skill_dir.rglob("*"):
+        # P1: Reject symlinks
+        if file_path.is_symlink():
+            violations.append(f"{file_path.relative_to(skill_dir)}: is a symlink (not allowed)")
+            continue
+
         if file_path.is_file():
             # Check extension
             if not is_text_file(file_path):
@@ -159,27 +182,70 @@ The upstream LICENSE file is included verbatim in this directory.
     return attribution
 
 
-def find_license_file(source_dir: Path) -> Path | None:
-    """Find LICENSE file in the skill directory or upstream location."""
+def find_license_file(skill_dir: Path, repo_root: Path | None = None) -> Path | None:
+    """
+    Find LICENSE file bounded to skill tree and repository root.
+
+    P1 FIX: Do not pick an unrelated ancestor LICENSE.
+    Search only in:
+    1. The skill directory itself
+    2. Parent directories up to (and including) the repository root
+
+    Args:
+        skill_dir: Path to the skill directory
+        repo_root: Path to the repository root (if known). If None, search up to filesystem root.
+
+    Returns:
+        Path to LICENSE file if found, None otherwise
+    """
     # Common license file names
     license_names = ["LICENSE", "LICENSE.txt", "LICENSE.md", "LICENCE", "LICENCE.txt", "LICENCE.md"]
 
-    # Check in skill directory
+    # Check in skill directory first
     for name in license_names:
-        license_file = source_dir / name
-        if license_file.exists():
+        license_file = skill_dir / name
+        if license_file.exists() and not license_file.is_symlink():
             return license_file
 
-    # Check parent directories up to root
-    current = source_dir.parent
-    while current.name:  # Stop at repository root
+    # Check parent directories up to repo root
+    current = skill_dir.parent
+    while True:
+        # Stop if we've reached the repo root
+        if repo_root and current == repo_root:
+            # Check this directory and then stop
+            for name in license_names:
+                license_file = current / name
+                if license_file.exists() and not license_file.is_symlink():
+                    return license_file
+            break
+
+        # Stop if we've reached the filesystem root
+        if current.parent == current:
+            break
+
+        # Check this directory
         for name in license_names:
             license_file = current / name
-            if license_file.exists():
+            if license_file.exists() and not license_file.is_symlink():
                 return license_file
+
+        # If no repo_root specified, only search the immediate parent
+        # to avoid picking up unrelated licenses
+        if repo_root is None:
+            break
+
         current = current.parent
 
     return None
+
+
+def compute_file_sha256(file_path: Path) -> str:
+    """Compute SHA-256 hash of a file."""
+    sha256 = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
 
 
 def mirror_skill(
@@ -197,7 +263,7 @@ def mirror_skill(
     Returns:
         (success, message)
     """
-    # Validate skill directory
+    # P1: Validate skill directory (includes symlink checks)
     is_valid, violations = validate_skill_directory(source_dir)
     if not is_valid:
         return (False, f"Validation failed: {'; '.join(violations)}")
@@ -216,53 +282,78 @@ def mirror_skill(
     if dry_run:
         return (True, f"Would mirror to {target_dir.relative_to(curated_base.parent)}")
 
-    # Create target directory
-    target_dir.mkdir(parents=True, exist_ok=True)
-
-    # Copy all files
-    for item in source_dir.rglob("*"):
-        if item.is_file():
-            rel_path = item.relative_to(source_dir)
-            target_file = target_dir / rel_path
-            target_file.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(item, target_file)
-
-    # Find and copy LICENSE
+    # P2: Locate LICENSE before copying
     license_file = find_license_file(source_dir)
-    if license_file:
+    if not license_file:
+        return (False, "No LICENSE file found in source (bounded search)")
+
+    # Create target directory
+    try:
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        # Copy all files (P1: skip symlinks)
+        for item in source_dir.rglob("*"):
+            if item.is_symlink():
+                # Skip symlinks entirely
+                continue
+
+            if item.is_file():
+                rel_path = item.relative_to(source_dir)
+                target_file = target_dir / rel_path
+                target_file.parent.mkdir(parents=True, exist_ok=True)
+
+                # P2: Verify hash if available
+                skill_md_sha = skill_record.get("hashes", {}).get("skill_md_sha256")
+                if rel_path.name == "SKILL.md" and skill_md_sha:
+                    # Compute hash of source file
+                    actual_hash = compute_file_sha256(item)
+                    if actual_hash != skill_md_sha:
+                        raise ValueError(f"Hash mismatch for SKILL.md: expected {skill_md_sha}, got {actual_hash}")
+
+                shutil.copy2(item, target_file)
+
+        # Copy LICENSE
         target_license = target_dir / "LICENSE"
         if not target_license.exists():
             shutil.copy2(license_file, target_license)
-    else:
-        return (False, "No LICENSE file found in source")
 
-    # Check for NOTICE file
-    notice_file = source_dir / "NOTICE"
-    if notice_file.exists():
-        target_notice = target_dir / "NOTICE"
-        shutil.copy2(notice_file, target_notice)
+        # Check for NOTICE file (non-symlink)
+        notice_file = source_dir / "NOTICE"
+        if notice_file.exists() and not notice_file.is_symlink():
+            target_notice = target_dir / "NOTICE"
+            shutil.copy2(notice_file, target_notice)
 
-        # Also append to curated/NOTICE
-        curated_notice = curated_base / "NOTICE"
-        with open(curated_notice, "a", encoding="utf-8") as f:
-            f.write(f"\n\n--- From {repo}/{path} ---\n")
-            f.write(notice_file.read_text(encoding="utf-8"))
+            # Also append to curated/NOTICE
+            curated_notice = curated_base / "NOTICE"
+            with open(curated_notice, "a", encoding="utf-8") as f:
+                f.write(f"\n\n--- From {repo}/{path} ---\n")
+                f.write(notice_file.read_text(encoding="utf-8"))
 
-    # Create ATTRIBUTION.md
-    attribution_content = create_attribution(skill_record, modifications="none")
-    attribution_file = target_dir / "ATTRIBUTION.md"
-    attribution_file.write_text(attribution_content, encoding="utf-8")
+        # Create ATTRIBUTION.md
+        attribution_content = create_attribution(skill_record, modifications="none")
+        attribution_file = target_dir / "ATTRIBUTION.md"
+        attribution_file.write_text(attribution_content, encoding="utf-8")
 
-    return (True, f"Successfully mirrored to {target_dir.relative_to(curated_base.parent)}")
+        return (True, f"Successfully mirrored to {target_dir.relative_to(curated_base.parent)}")
+
+    except Exception as e:
+        # P2: Clean up partial curated/ on failure
+        if target_dir.exists():
+            try:
+                shutil.rmtree(target_dir)
+            except Exception:
+                pass  # Best effort cleanup
+        return (False, f"Failed to mirror: {e}")
 
 
-def load_skills_index(index_path: Path) -> list[dict[str, Any]]:
-    """Load skills from skills.jsonl or skills.json."""
-    if not index_path.exists():
-        return []
+def load_skills_index(workspace: Path) -> list[dict[str, Any]]:
+    """
+    Load skills from skills.jsonl or skills.json.
 
-    # Try .jsonl first
-    jsonl_path = index_path.parent / "skills.jsonl"
+    P2 FIX: Resolve both skills.jsonl and skills.json up front.
+    """
+    # Try .jsonl first (primary)
+    jsonl_path = workspace / "index" / "skills.jsonl"
     if jsonl_path.exists():
         skills = []
         with open(jsonl_path, "r", encoding="utf-8") as f:
@@ -273,7 +364,7 @@ def load_skills_index(index_path: Path) -> list[dict[str, Any]]:
         return skills
 
     # Fall back to .json
-    json_path = index_path.parent / "skills.json"
+    json_path = workspace / "index" / "skills.json"
     if json_path.exists():
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -294,8 +385,10 @@ def curate_by_id(skill_id: str, workspace: Path, dry_run: bool = False) -> tuple
     Returns:
         (success, message)
     """
-    index_path = workspace / "index" / "skills.jsonl"
-    skills = load_skills_index(index_path)
+    skills = load_skills_index(workspace)
+
+    if not skills:
+        return (False, "No skills found in index")
 
     # Find skill
     skill = None
@@ -316,13 +409,20 @@ def curate_by_id(skill_id: str, workspace: Path, dry_run: bool = False) -> tuple
     if not is_valid:
         return (False, f"Does not meet curation criteria: {'; '.join(reasons)}")
 
-    # For now, since we don't have actual crawled data, we just validate
-    # In a real implementation, this would mirror from build/raw/ or state/
-    return (True, f"Skill {skill_id} is valid for curation")
+    # P2 CRITICAL: Actually mirror the skill in non-dry-run mode
+    if not dry_run:
+        # TODO: In a full implementation, we would need to find the source directory
+        # from build/raw/ or state/crawl/ based on the skill's source information
+        return (False, "Non-dry-run curation not yet fully implemented - need crawled source data")
+
+    return (True, f"Skill {skill_id} is valid for curation (dry-run)")
 
 
 def curate_auto_tier1(
-    workspace: Path, max_total: int = 40, max_per_source: int = 3, dry_run: bool = False
+    workspace: Path,
+    max_total: int = 40,
+    max_per_source: int = 3,
+    dry_run: bool = False,
 ) -> tuple[int, list[str]]:
     """
     Auto-curate tier 1 skills that meet all criteria.
@@ -336,8 +436,7 @@ def curate_auto_tier1(
     Returns:
         (count_curated, list_of_messages)
     """
-    index_path = workspace / "index" / "skills.jsonl"
-    skills = load_skills_index(index_path)
+    skills = load_skills_index(workspace)
 
     if not skills:
         return (0, ["No skills found in index"])
@@ -394,6 +493,12 @@ def curate_auto_tier1(
             skill_id = skill.get("id", "unknown")
             desc = skill.get("description", "")[:80]
             messages.append(f"  - {skill_id}: {desc}")
+    else:
+        # P2 CRITICAL: Actually mirror skills in non-dry-run mode
+        messages.append(
+            "\nNon-dry-run curation not yet fully implemented - would need to mirror from crawled source data"
+        )
+        # TODO: Implement actual mirroring loop here using mirror_skill()
 
     return (len(selected), messages)
 
@@ -420,7 +525,10 @@ def cmd_curate(args, workspace: Path) -> int:
     elif args.auto_tier1:
         # Auto-curate tier 1 skills
         count, messages = curate_auto_tier1(
-            workspace, max_total=args.max_total, max_per_source=args.max_per_source, dry_run=dry_run
+            workspace,
+            max_total=args.max_total,
+            max_per_source=args.max_per_source,
+            dry_run=dry_run,
         )
         for message in messages:
             print(message)

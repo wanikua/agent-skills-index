@@ -194,3 +194,25 @@ def test_curate_command_auto_tier1_empty_index():
     # Should succeed but find no skills
     assert result.returncode == 0
     assert "no skills" in result.stdout.lower() or "found" in result.stdout.lower()
+
+
+def test_is_valid_for_curation_security_pass():
+    """Test that skills with security.status == pass are accepted."""
+    fixtures_dir = Path(__file__).parent / "fixtures" / "skills"
+    with open(fixtures_dir / "valid-with-security-pass.json") as f:
+        skill = json.load(f)
+
+    is_valid, reasons = is_valid_for_curation(skill)
+    assert is_valid
+    assert len(reasons) == 0
+
+
+def test_is_valid_for_curation_security_warn():
+    """Test that skills with security.status != pass are rejected."""
+    fixtures_dir = Path(__file__).parent / "fixtures" / "skills"
+    with open(fixtures_dir / "invalid-security-warn.json") as f:
+        skill = json.load(f)
+
+    is_valid, reasons = is_valid_for_curation(skill)
+    assert not is_valid
+    assert any("security" in r.lower() for r in reasons)

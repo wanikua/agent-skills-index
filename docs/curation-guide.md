@@ -37,7 +37,10 @@ A skill must meet ALL of the following criteria to be eligible for curation:
 - Must not be a duplicate of another skill
 - `dedup.duplicate_of` must be `null`
 
-### 5. File Constraints
+### 5. Security
+- If `security` field exists, `security.status` must be `"pass"` (fail closed for curated)
+
+### 6. File Constraints
 - Only text files with whitelisted extensions: `.md`, `.py`, `.sh`, `.js`, `.ts`, `.json`, `.yaml`, `.yml`, `.txt`
 - Common files without extensions are allowed: LICENSE, NOTICE, README, AUTHORS, CONTRIBUTORS, COPYING, ATTRIBUTION
 - Each file must be ≤ 1 MB
