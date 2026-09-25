@@ -12,7 +12,7 @@ from typing import Any
 
 import yaml
 
-from tools.atlas import frontmatter
+from tools.atlas import check_refs, frontmatter, quality
 
 logger = logging.getLogger(__name__)
 
@@ -267,6 +267,8 @@ def build_skill_record(
     existing_records: dict[str, dict[str, Any]],
     all_content_hashes: dict[str, list[str]],
     now: datetime,
+    check_external_refs: bool = False,
+    ref_checker: check_refs.ReferenceChecker | None = None,
 ) -> dict[str, Any] | None:
     """
     Build a complete skill record from crawled data.
@@ -302,6 +304,30 @@ def build_skill_record(
         # Compute content hash
         content_hash = compute_content_hash(content, fm_result.get("frontmatter"))
 
+        # Run quality linting
+        quality_result = quality.lint_quality(
+            skill_md_path=None,
+            content=content,
+            name=fm_result.get("frontmatter", {}).get("name"),
+            description=fm_result.get("frontmatter", {}).get("description"),
+        )
+
+        # Run security scan (S2-4)
+        from tools.atlas import security
+
+        description = fm_result.get("frontmatter", {}).get("description")
+        scripts_present = raw_skill.get("has_scripts", False)
+
+        scan_result = security.scan_skill(
+            content=content,
+            description=description,
+            scripts_present=scripts_present,
+            commit_sha=raw_skill["commit_sha"],
+            layer="source",
+        )
+
+        security_field = security.format_security_field(scan_result)
+
         # Determine trust tier
         trust_tier = determine_trust_tier(source, content_hash, all_content_hashes)
 
@@ -316,6 +342,25 @@ def build_skill_record(
             last_changed = existing.get("last_changed", now.isoformat())
         else:
             last_changed = now.isoformat()
+
+        # Determine initial status (may be overridden by reference checks)
+        skill_status = "active"
+
+        # Check external references if enabled (S2-5)
+        external_refs_data = None
+        if check_external_refs:
+            try:
+                external_refs_result = check_refs.check_skill_references(raw_skill, ref_checker)
+                if external_refs_result["has_dangling"]:
+                    skill_status = "dangling"
+                    logger.warning(f"Skill {skill_id} has dangling references: {external_refs_result['dangling_refs']}")
+                external_refs_data = external_refs_result["external_refs"]
+            except Exception as e:
+                logger.error(f"Failed to check references for {skill_id}: {e}")
+
+        # Update security field with external refs from S2-5
+        if external_refs_data is not None:
+            security_field["external_refs"] = external_refs_data
 
         # Build the record
         record = {
@@ -365,8 +410,8 @@ def build_skill_record(
             "tags": [],  # TODO: Extract from content
             "signals": {"repo_stars": None},  # TODO: Fetch from GitHub API in S2
             "registry_ids": {},  # S3-7
-            "security": {"status": "pending", "risk_level": None, "scans": []},  # S2-4
-            "quality": {"spec_valid": fm_result.get("strict", False), "smells": []},  # S2-6
+            "security": security_field,  # S2-4 (includes external_refs from S2-5)
+            "quality": {"spec_valid": fm_result.get("strict", False), "smells": quality_result.smells},  # S2-6
             "dedup": {
                 "canonical_id": None,
                 "duplicate_of": None,
@@ -374,7 +419,7 @@ def build_skill_record(
                 "cluster": None,
             },  # S2-2/3
             "curated_path": None,
-            "status": "active",
+            "status": skill_status,  # S2-5: May be "dangling" if refs don't exist
             "first_seen": first_seen,
             "last_seen": last_seen,
             "last_changed": last_changed,
@@ -400,8 +445,10 @@ def compute_stats(skills: list[dict[str, Any]], sources_count: int, now: datetim
     Returns:
         Stats dict
     """
+    from tools.atlas.dedup import compute_canonical_count
+
     total_skills = len(skills)
-    canonical_skills = total_skills  # S2 will implement dedup
+    canonical_skills = compute_canonical_count(skills)
     curated_skills = sum(1 for s in skills if s.get("layer") == "curated")
 
     by_license_class = defaultdict(int)
@@ -530,6 +577,7 @@ def build_index(
     sources_file: Path,
     index_dir: Path,
     repo_root: Path,
+    check_external_refs: bool = False,
 ) -> dict[str, Any]:
     """
     Build index files from crawled data.
@@ -539,6 +587,7 @@ def build_index(
         sources_file: Path to index/sources.json
         index_dir: Directory for index outputs
         repo_root: Repository root
+        check_external_refs: Enable external reference checking (S2-5)
 
     Returns:
         Build summary dict
@@ -561,6 +610,27 @@ def build_index(
     with open(sources_file, encoding="utf-8") as f:
         sources_data = json.load(f)
     sources_by_id = {s["id"]: s for s in sources_data.get("repositories", [])}
+
+    # Check for deleted source owners (S2-5 critical check)
+    if check_external_refs:
+        logger.info("Checking source repository owners...")
+        ref_checker = check_refs.ReferenceChecker()
+        deleted_source_ids = []
+
+        for source_id, source in sources_by_id.items():
+            owner_exists = check_refs.check_source_owner(source, ref_checker)
+            if not owner_exists:
+                logger.warning(f"⚠️  Source owner deleted: {source.get('url')}")
+                deleted_source_ids.append(source_id)
+
+        if deleted_source_ids:
+            logger.warning(
+                f"Found {len(deleted_source_ids)} sources with deleted owners. "
+                f"Skills from these sources will be marked as dangling."
+            )
+    else:
+        ref_checker = None
+        deleted_source_ids = []
 
     # Load existing index
     logger.info("Loading existing index...")
@@ -592,17 +662,61 @@ def build_index(
     # Build skill records
     logger.info("Building skill records...")
     skills = []
+    skills_from_deleted_owners = 0
+
     for raw_skill in raw_skills:
         source = sources_by_id.get(raw_skill["source_id"])
         if not source:
             logger.warning(f"Source {raw_skill['source_id']} not found, skipping skill")
             continue
 
-        record = build_skill_record(raw_skill, source, sources_by_id, existing_skills, content_hash_to_sources, now)
-        if record:
-            skills.append(record)
+        # Check if this skill's source owner is deleted (critical for SkillJacking)
+        if raw_skill["source_id"] in deleted_source_ids:
+            # Force status to dangling for skills from deleted owners
+            record = build_skill_record(
+                raw_skill,
+                source,
+                sources_by_id,
+                existing_skills,
+                content_hash_to_sources,
+                now,
+                check_external_refs=False,  # Don't check refs if owner is already deleted
+                ref_checker=None,
+            )
+            if record:
+                record["status"] = "dangling"
+                record["status_reason"] = "source_owner_deleted"
+                skills.append(record)
+                skills_from_deleted_owners += 1
+        else:
+            record = build_skill_record(
+                raw_skill,
+                source,
+                sources_by_id,
+                existing_skills,
+                content_hash_to_sources,
+                now,
+                check_external_refs=check_external_refs,
+                ref_checker=ref_checker,
+            )
+            if record:
+                skills.append(record)
 
     logger.info(f"Built {len(skills)} skill records")
+    if skills_from_deleted_owners > 0:
+        logger.warning(f"  ⚠️  {skills_from_deleted_owners} skills from deleted owners marked as dangling")
+
+    # Apply deduplication
+    logger.info("Applying exact deduplication...")
+    from tools.atlas.dedup import apply_deduplication
+
+    skills = apply_deduplication(skills)
+
+    # Apply near-duplicate detection (S2-3)
+    logger.info("Applying near-duplicate detection...")
+    from tools.atlas.neardup import apply_near_deduplication
+
+    skills = apply_near_deduplication(skills)
 
     # Build skills by ID dict
     new_skills_by_id = {s["id"]: s for s in skills}
