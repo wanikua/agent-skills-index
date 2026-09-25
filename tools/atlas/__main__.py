@@ -9,6 +9,7 @@ from pathlib import Path
 def cmd_validate(args):
     """Validate the index data and schema."""
     from tools.atlas.schema import validate_index
+    from tools.atlas.stats import validate_readme_stats
 
     exit_code = 0
 
@@ -25,6 +26,22 @@ def cmd_validate(args):
                 print(f"\n{filename}:", file=sys.stderr)
                 for error in errors:
                     print(f"  - {error}", file=sys.stderr)
+            exit_code = 1
+
+        # README stats validation
+        print("Validating README stats block...")
+        repo_root = Path.cwd()
+        readme_path = repo_root / "README.md"
+        stats_file = repo_root / "index" / "stats.json"
+
+        is_valid, errors = validate_readme_stats(readme_path, stats_file)
+        if is_valid:
+            print("✓ README stats block is consistent with stats.json")
+        else:
+            print("✗ README stats validation failed:", file=sys.stderr)
+            for error in errors:
+                print(f"  - {error}", file=sys.stderr)
+            print("\nRun 'atlas stats --readme' to update the README", file=sys.stderr)
             exit_code = 1
 
     # Wording lint
@@ -151,8 +168,35 @@ def cmd_build(args):
 
 def cmd_stats(args):
     """Generate statistics from the index."""
-    print("Stats not yet implemented")
-    return 0
+    from pathlib import Path
+
+    from tools.atlas.stats import update_readme_stats
+
+    repo_root = Path.cwd()
+    readme_path = repo_root / "README.md"
+    stats_file = repo_root / "index" / "stats.json"
+
+    if not args.readme:
+        print("Error: Currently only --readme is supported", file=sys.stderr)
+        print("Usage: atlas stats --readme", file=sys.stderr)
+        return 1
+
+    try:
+        updated = update_readme_stats(readme_path, stats_file)
+        if updated:
+            print("✓ README.md stats block updated")
+        else:
+            print("✓ README.md stats block already up to date")
+        return 0
+    except ValueError as e:
+        print(f"✗ Failed to update README: {e}", file=sys.stderr)
+        return 1
+    except Exception as e:
+        print(f"✗ Unexpected error: {e}", file=sys.stderr)
+        import traceback
+
+        traceback.print_exc()
+        return 1
 
 
 def cmd_lint_skill(args):
@@ -693,6 +737,7 @@ def main():
 
     # stats command
     stats_parser = subparsers.add_parser("stats", help="Generate statistics from the index")
+    stats_parser.add_argument("--readme", action="store_true", help="Update README.md stats block from stats.json")
     stats_parser.set_defaults(func=cmd_stats)
 
     # lint-skill command
