@@ -810,7 +810,7 @@ def cmd_show(args):
         print(f"Security: {skill['security']}")
         print(f"\nURL: {skill['url']}")
         print(f"Content Hash: {skill['content_hash']}")
-        if skill['alternatives_count'] > 0:
+        if skill["alternatives_count"] > 0:
             print(f"Alternatives: {skill['alternatives_count']}")
         if skill.get("canonical_id"):
             print(f"Canonical ID: {skill['canonical_id']}")

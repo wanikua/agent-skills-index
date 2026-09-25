@@ -146,8 +146,9 @@ def test_build_router_db(sample_skills_jsonl, tmp_path):
     assert cursor.fetchone()[0] == 4
 
     # Check alternatives_count is calculated
-    cursor = conn.execute("SELECT alternatives_count FROM skill_metadata WHERE skill_id = ?",
-                          ("github.com/example/skills/pdf",))
+    cursor = conn.execute(
+        "SELECT alternatives_count FROM skill_metadata WHERE skill_id = ?", ("github.com/example/skills/pdf",)
+    )
     alternatives = cursor.fetchone()[0]
     assert alternatives == 1  # pdf-tool is an alternative
 
@@ -259,8 +260,7 @@ def test_search_skills_black_hole_downrank(router_db):
 
     # If both appear, generic should rank after specific
     if generic_indices and specific_indices:
-        assert generic_indices[0] > specific_indices[0], \
-            "Generic skill should rank after specific skills"
+        assert generic_indices[0] > specific_indices[0], "Generic skill should rank after specific skills"
 
     # Or test the score directly
     if generic_indices:
