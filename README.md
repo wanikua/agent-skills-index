@@ -5,12 +5,12 @@
 **Goal:** the most complete, most up-to-date, license-aware open index.
 
 <!-- atlas:stats:start -->
-*Early preview: the index is being seeded.*
-
-- **Total skills indexed:** [0](index/skills.jsonl)
-- **Source repositories:** [0](index/sources.json)
+- **Total skills indexed:** [3,196](index/skills.jsonl)
+- **Canonical skills:** [3,156](index/skills.jsonl) (after deduplication)
+- **Source repositories:** [36](index/sources.json)
 - **Curated skills:** [0](curated/)
-- **Last updated:** 2026-09-24
+- **License-resolved:** 17.7% (565 of 3,196 skills)
+- **Last updated:** 2026-09-28
 <!-- atlas:stats:end -->
 
 ## For AI Agents

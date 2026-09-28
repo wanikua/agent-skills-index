@@ -158,7 +158,7 @@ def determine_trust_tier(source: dict[str, Any], content_hash: str, all_content_
 
 
 def resolve_license_from_crawl(
-    content: str, frontmatter_license: str | None, license_files: list[str]
+    content: str, frontmatter_license: str | None, license_files: list[dict | str]
 ) -> dict[str, Any]:
     """
     Simplified license resolution for build process using crawled metadata.
@@ -166,11 +166,19 @@ def resolve_license_from_crawl(
     Args:
         content: SKILL.md content
         frontmatter_license: License from frontmatter
-        license_files: List of license file paths from crawl
+        license_files: List of license file paths or dicts from crawl (may be {"path": "...", "sha": "..."} or strings)
 
     Returns:
         License info dict with keys: declared, spdx, evidence, file, class
     """
+    # Normalize license_files to list of path strings
+    license_file_paths = []
+    for lf in license_files:
+        if isinstance(lf, dict):
+            license_file_paths.append(lf.get("path", ""))
+        elif isinstance(lf, str):
+            license_file_paths.append(lf)
+
     # For now, use a simplified approach based on frontmatter
     # TODO: Integrate with full license resolver when file access is available
 
@@ -230,13 +238,13 @@ def resolve_license_from_crawl(
         word in frontmatter_license for word in ["http", "www", "://"]
     ):
         evidence = "skill-file"
-        lic_file = license_files[0] if license_files else None
+        lic_file = license_file_paths[0] if license_file_paths else None
 
     return {
         "declared": frontmatter_license,
         "spdx": spdx,
         "evidence": evidence,
-        "file": lic_file,
+        "file": lic_file,  # Now guaranteed to be a string or None
         "class": lic_class,
     }
 
@@ -362,11 +370,31 @@ def build_skill_record(
         if external_refs_data is not None:
             security_field["external_refs"] = external_refs_data
 
+        # Validate and normalize name/description
+        name = fm_result.get("frontmatter", {}).get("name", "")
+        description = fm_result.get("frontmatter", {}).get("description", "")
+
+        # Handle empty name - use directory name as fallback
+        if not name or not name.strip():
+            # Use last component of skill_dir as fallback
+            name = skill_dir.split("/")[-1] if skill_dir != "." else "root"
+            logger.warning(f"Empty name for {skill_id}, using fallback: {name}")
+
+        # Handle empty description - skip this skill
+        if not description or not description.strip():
+            logger.warning(f"Empty description for {skill_id}, skipping skill")
+            return None
+
+        # Truncate description to schema max (1024 chars)
+        if len(description) > 1024:
+            description = description[:1024]
+            logger.warning(f"Description too long for {skill_id}, truncated to 1024 chars")
+
         # Build the record
         record = {
             "id": skill_id,
-            "name": fm_result.get("frontmatter", {}).get("name", ""),
-            "description": fm_result.get("frontmatter", {}).get("description", ""),
+            "name": name,
+            "description": description,
             "layer": "source",  # S1-7 will promote some to curated
             "source": {
                 "host": "github.com",
@@ -400,7 +428,7 @@ def build_skill_record(
                 "declared": license_result.get("declared", ""),
                 "spdx": license_result.get("spdx", "NOASSERTION"),
                 "evidence": license_result.get("evidence", "none"),
-                "file": license_result.get("file"),
+                "file": license_result.get("file") if isinstance(license_result.get("file"), str) else None,
                 "class": license_result.get("class", "unknown"),
             },
             "declared_version": (fm_result.get("frontmatter", {}).get("metadata") or {}).get("version"),
