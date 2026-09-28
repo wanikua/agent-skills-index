@@ -5,11 +5,11 @@
 **Goal:** the most complete, most up-to-date, license-aware open index.
 
 <!-- atlas:stats:start -->
-- **Total skills indexed:** [3,200](index/skills.jsonl)
-- **Canonical skills:** [3,160](index/skills.jsonl) (after deduplication)
+- **Total skills indexed:** [3,196](index/skills.jsonl)
+- **Canonical skills:** [3,156](index/skills.jsonl) (after deduplication)
 - **Source repositories:** [36](index/sources.json)
 - **Curated skills:** [0](curated/)
-- **License-resolved:** 17.7% (565 of 3,200 skills)
+- **License-resolved:** 17.7% (565 of 3,196 skills)
 - **Last updated:** 2026-09-28
 <!-- atlas:stats:end -->
 

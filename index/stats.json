@@ -3,21 +3,21 @@
     "allow": 546,
     "conditional": 7,
     "deny": 12,
-    "unknown": 2635
+    "unknown": 2631
   },
   "by_trust_tier": {
     "aggregator-copy": 5,
-    "community": 507,
-    "official": 1833,
+    "community": 505,
+    "official": 1831,
     "unreviewed": 855
   },
-  "canonical_skills": 3160,
+  "canonical_skills": 3156,
   "curated_skills": 0,
-  "generated_at": "2026-09-28T04:15:16.575847+00:00",
-  "index_commit": "0178990",
+  "generated_at": "2026-09-28T04:21:33.058199+00:00",
+  "index_commit": "01ff05c",
   "repositories": 36,
   "schema_version": "2.0.0",
   "spec_strict_valid_pct": 0.84,
   "tier1_freshness_p50_hours": null,
-  "total_skills": 3200
+  "total_skills": 3196
 }
