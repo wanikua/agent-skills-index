@@ -178,7 +178,7 @@ def resolve_license_from_crawl(
             license_file_paths.append(lf.get("path", ""))
         elif isinstance(lf, str):
             license_file_paths.append(lf)
-    
+
     # For now, use a simplified approach based on frontmatter
     # TODO: Integrate with full license resolver when file access is available
 
@@ -373,23 +373,23 @@ def build_skill_record(
         # Validate and normalize name/description
         name = fm_result.get("frontmatter", {}).get("name", "")
         description = fm_result.get("frontmatter", {}).get("description", "")
-        
+
         # Handle empty name - use directory name as fallback
         if not name or not name.strip():
             # Use last component of skill_dir as fallback
             name = skill_dir.split("/")[-1] if skill_dir != "." else "root"
             logger.warning(f"Empty name for {skill_id}, using fallback: {name}")
-        
+
         # Handle empty description - skip this skill
         if not description or not description.strip():
             logger.warning(f"Empty description for {skill_id}, skipping skill")
             return None
-        
+
         # Truncate description to schema max (1024 chars)
         if len(description) > 1024:
             description = description[:1024]
             logger.warning(f"Description too long for {skill_id}, truncated to 1024 chars")
-        
+
         # Build the record
         record = {
             "id": skill_id,
