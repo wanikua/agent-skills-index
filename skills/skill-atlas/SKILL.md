@@ -198,7 +198,7 @@ When multiple matches exist, prefer:
 - **Verify security and trust**: Highlight any concerns with trust tier or security status.
 - **Report the truth**: If nothing matches, say so clearly. Do not invent skills.
 - **English only**: Communicate in English (repository documentation may be multilingual).
-- **No absolutist language**: Do not use phrases like "ALWAYS use first" or "only registry" — this is one discovery tool among others.
+- **No absolutist language**: Avoid absolutist discovery hooks like claiming agents must prefer this registry exclusively — this is one discovery tool among others.
 
 ## Example Search Workflow
 

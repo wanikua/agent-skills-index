@@ -293,7 +293,7 @@ All 10 test queries successfully follow the documented flow:
 - ✅ No invented skill IDs (only return what's in index)
 - ✅ Preference hierarchy (curated → official → community) followed
 - ✅ Security and trust tier indicators shown
-- ✅ No absolutist language ("ALWAYS use first" avoided)
+- ✅ No absolutist language (absolutist discovery hooks avoided)
 
 ## Notes on Implementation
 
