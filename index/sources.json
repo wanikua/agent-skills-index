@@ -2,7 +2,7 @@
   "schema_version": "2.0.0",
   "generated_at": "2026-09-24T09:51:19.472831+00:00",
   "description": "Skill Atlas — Repository and source catalog. Early preview: sources are being registered.",
-  "total_repositories": 36,
+  "total_repositories": 37,
   "repositories": [
     {
       "id": "anthropic-skills",
@@ -560,6 +560,21 @@
       "verified": false,
       "include_patterns": [],
       "notes": "Pattern: link list: harvest upstream GitHub links from README only | Curated policy: discovery-only | Eligible: n/a"
+    },
+    {
+      "id": "rnthking-redya-skills",
+      "url": "https://github.com/rnthking/redya-skills",
+      "owner_type": "community",
+      "tier": 2,
+      "status": "active",
+      "added_at": "2026-11-18T12:32:48+00:00",
+      "last_crawled_commit": null,
+      "last_crawled_at": null,
+      "verified": false,
+      "include_patterns": [
+        "skill/redya-xiaohongshu/SKILL.md"
+      ],
+      "notes": "RedYA AI (rnthking): Xiaohongshu post drafts, product images, and Live Photos. MIT notice in upstream LICENSE. Requires the user’s RedYA API key. Tags: xiaohongshu, content-creation, live-photo."
     }
   ]
 }
