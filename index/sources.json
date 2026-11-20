@@ -574,7 +574,7 @@
       "include_patterns": [
         "skill/redya-xiaohongshu/SKILL.md"
       ],
-      "notes": "RedYA AI (rnthking): Illustrated and product posts, reference adaptations, Live Photos, copy review and editor handoff. MIT notice in upstream LICENSE. Requires the user’s RedYA API key. Tags: xiaohongshu, content-creation, live-photo."
+      "notes": "小红书图文与实况图·红鸦 AI (rnthking): Illustrated and product posts, reference adaptations, Live Photos, copy review and editor handoff. MIT notice in upstream LICENSE. Requires the user’s RedYA API key. Tags: xiaohongshu, content-creation, live-photo."
     }
   ]
 }
